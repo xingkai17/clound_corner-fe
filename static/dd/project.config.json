@@ -1,0 +1,15 @@
+{
+  "setting": {
+    "newFeature": true,
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false,
+    "checkSiteMap": false,
+    "autoAudits": false
+  },
+  "appid": "touristappid",
+  "projectname": "didi-marketing-background",
+  "description": "营销老板端",
+  "condition": {}
+}
