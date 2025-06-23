@@ -1,0 +1,64 @@
+{
+  "unocss.languageIds": [
+    "mpx",
+    "vue",
+  ],
+  "eslint.codeActionsOnSave.mode": "all", // all 一次性修复所有可能的问题，problems 只修复当前的问题（逐个修复）
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "vue-html",
+    "html",
+    "vue",
+    "mpx",
+    "wpy",
+    "wxml",
+    "wxss",
+    "cjson",
+    "wxs",
+    "typescript",
+    "typescriptreact",
+  ],
+
+  // stylelint 校验的文件类型
+  "stylelint.validate": [
+    "css",
+    "postcss",
+    "less",
+    "scss",
+    "sass",
+    "vue"
+  ],
+  "mpx.format.defaultFormatter.html": "prettier",
+  "mpx.format.defaultFormatter.css": "prettier",
+  "mpx.format.defaultFormatter.scss": "prettier",
+  "mpx.format.defaultFormatter.less": "prettier",
+  "mpx.format.defaultFormatter.stylus": "stylus-supremacy",
+  "mpx.format.defaultFormatter.js": "prettier",
+  "mpx.format.defaultFormatter.ts": "prettier",
+  "mpx.format.defaultFormatter.json": "prettier",
+
+  "mpx.format.defaultFormatterOptions": {
+    "prettyhtml": {
+        "printWidth": 100,
+        "singleQuote": false,
+        "wrapAttributes": false,
+        "sortAttributes": false
+    },
+    "prettier": {
+        "printWidth": 100,
+        "singleQuote": true,
+        "wrapAttributes": false,
+        "sortAttributes": false,
+        "semi": false,
+        "insertSpaceBeforeFunctionParenthesis": true
+    },
+    "stylus-supremacy": {
+        "insertColons": false,
+        "insertSemicolons": false,
+        "insertBraces": false,
+        "insertNewLineAroundImports": true,
+        "insertNewLineAroundBlocks": false
+    }
+  },
+}
