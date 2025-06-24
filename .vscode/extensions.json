@@ -1,3 +1,6 @@
 {
-  "recommendations": []
+  "recommendations": [
+    "antfu.unocss",
+    "pagnkelly.mpx",
+  ]
 }

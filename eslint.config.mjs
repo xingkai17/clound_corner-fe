@@ -10,6 +10,12 @@ export default mpxConfig(
         sourceType: 'module',
       },
     },
+    env: {
+      node: true,
+    },
+    extends: [
+      'eslint:recommended',
+    ],
     globals: {
       // Mpx 全局变量
       mpx: 'readonly',

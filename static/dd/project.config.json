@@ -9,7 +9,7 @@
     "autoAudits": false
   },
   "appid": "touristappid",
-  "projectname": "didi-marketing-background",
-  "description": "营销老板端",
+  "projectname": "mpx-project",
+  "description": "A mpx project",
   "condition": {}
 }
