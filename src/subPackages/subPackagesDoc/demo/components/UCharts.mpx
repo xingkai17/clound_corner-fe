@@ -1,0 +1,404 @@
+<!-- 图表 -->
+<!-- 在微信小程序中使用 uCharts
+官方指南：https://www.ucharts.cn/v2/#/guide/index
+官方示例：https://www.ucharts.cn/v2/#/demo/index -->
+<template>
+  <div class="demo">
+
+    <p class="mr-6">
+      相关文档，点击复制地址：
+      <span class="fn-12 font-weight-normal color-primary mr-10" bindtap="copy" data-value="https://www.ucharts.cn/v2/#/guide/index">官方指南</span>
+      <span class="fn-12 font-weight-normal color-primary" bindtap="copy" data-value="https://www.ucharts.cn/v2/#/demo/index">官方示例</span>
+    </p>
+
+    <p>目前使用的是"原生方式"，查看官网的示例代码：进入"官方示例"页面，点击图表下方的"查看代码"，选择顶部的"uni-app"、底部的"原生"按钮，可以看到具体代码。</p>
+
+    <h3>柱状图 column</h3>
+    <canvas id="columnChart" type="2d" class="charts" bindtap="tap"/>
+
+    <h3>条状图 bar</h3>
+    <canvas id="barChart" type="2d" class="charts" bindtap="tap"/>
+
+    <h3>饼图 pie</h3>
+    <canvas id="pieChart" type="2d" class="charts" bindtap="tap"/>
+
+    <h3>多坐标系混合图</h3>
+    <canvas id="mixChart" type="2d" class="charts" bindtap="tap"/>
+
+  </div>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+import UCharts from 'src/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+
+// 记录图表实例
+const uChartsInstance = {};
+
+createComponent({
+  attached() {
+    this.init();
+  },
+
+  methods: {
+    // 复制文本
+    copy(e) {
+      const value = e.currentTarget.dataset.value;
+      mpx.setClipboardData({ data: value });
+    },
+
+    init() {
+      // 模拟从服务器获取数据时的延时
+      setTimeout(() => {
+        this.drawColumnChart('columnChart', columnChartData);
+        this.drawBarChart('barChart', barChartData);
+        this.drawPieChart('pieChart', peiChartData);
+        this.drawMixChart('mixChart', mixChartData);
+      }, 200);
+    },
+
+    // 图表点击
+    tap(e) {
+      // e.target.id 使用的是 id 属性
+      uChartsInstance[e.target.id].touchLegend(e);
+      uChartsInstance[e.target.id].showToolTip(e);
+    },
+
+    /**
+     * @description 绘制图表-柱状图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawColumnChart(id, data) {
+      // id 使用的是 canvas-id 属性，但需要和标签上的 id 属性一直，因为 tap 需要使用
+      const query = mpx.createSelectorQuery().in(this);
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'column',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              categories: data.categories,
+              series: data.series,
+              xAxis: {
+                disableGrid: true,
+              },
+              yAxis: {
+                data: [{ min: 0 }],
+              },
+              extra: {
+                column: {
+                  type: 'group',
+                },
+              },
+            });
+          });
+      });
+    },
+
+    /**
+     * @description 绘制图表-条状图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawBarChart(id, data) {
+      const query = mpx.createSelectorQuery().in(this);
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'bar',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              categories: data.categories,
+              series: data.series,
+              animation: true,
+              background: '#FFFFFF',
+              color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
+              padding: [15, 30, 0, 5],
+              enableScroll: false,
+              legend: {},
+              xAxis: {
+                boundaryGap: 'justify',
+                disableGrid: false,
+                min: 0,
+                axisLine: false,
+                max: 40,
+              },
+              yAxis: {},
+              extra: {
+                bar: {
+                  type: 'group',
+                  width: 30,
+                  meterBorde: 1,
+                  meterFillColor: '#FFFFFF',
+                  activeBgColor: '#000000',
+                  activeBgOpacity: 0.08,
+                  linearType: 'custom',
+                  barBorderCircle: true,
+                  seriesGap: 2,
+                  categoryGap: 2,
+                },
+              },
+            });
+          });
+      });
+    },
+
+    /**
+     * @description 绘制图表-饼图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawPieChart(id, data) {
+      const query = mpx.createSelectorQuery().in(this);
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'pie',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              series: data.series,
+              animation: true,
+              background: '#FFFFFF',
+              color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
+              padding: [5, 5, 5, 5],
+              enableScroll: false,
+              extra: {
+                pie: {
+                  activeOpacity: 0.5,
+                  activeRadius: 10,
+                  offsetAngle: 0,
+                  labelWidth: 15,
+                  border: false,
+                  borderWidth: 3,
+                  borderColor: '#FFFFFF',
+                },
+              },
+            });
+          });
+      });
+    },
+
+    /**
+     * @description 绘制图表-多坐标系混合图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawMixChart(id, data) {
+      const query = mpx.createSelectorQuery().in(this);
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'mix',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              categories: data.categories,
+              series: data.series,
+              animation: true,
+              background: '#FFFFFF',
+              color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
+              padding: [15, 15, 0, 15],
+              enableScroll: false,
+              legend: {},
+              xAxis: {
+                disableGrid: true,
+                title: '单位：年',
+              },
+              yAxis: {
+                disabled: false,
+                disableGrid: false,
+                splitNumber: 5,
+                gridType: 'dash',
+                dashLength: 4,
+                gridColor: '#CCCCCC',
+                padding: 10,
+                showTitle: true,
+                data: [
+                  {
+                    position: 'left',
+                    title: '折线',
+                  },
+                  {
+                    position: 'right',
+                    min: 0,
+                    max: 200,
+                    title: '柱状图',
+                    textAlign: 'left',
+                  },
+                  {
+                    position: 'right',
+                    min: 0,
+                    max: 200,
+                    title: '点',
+                    textAlign: 'left',
+                  },
+                ],
+              },
+              extra: {
+                mix: {
+                  column: {
+                    width: 20,
+                  },
+                },
+              },
+            });
+          });
+      });
+    },
+  },
+});
+
+// 柱状图数据
+const columnChartData = {
+  categories: ['2016', '2017', '2018', '2019', '2020', '2021'],
+  series: [
+    {
+      name: '目标值',
+      data: [35, 36, 31, 33, 13, 34],
+    },
+    {
+      name: '完成量',
+      data: [18, 27, 21, 24, 6, 28],
+    },
+  ],
+};
+
+// 条状图数据
+const barChartData = {
+  categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
+  series: [
+    {
+      name: '目标值',
+      data: [35, 36, 31, 33, 13, 34],
+    },
+    {
+      name: '完成量',
+      data: [18, 27, 21, 24, 6, 28],
+    },
+  ],
+};
+
+// 饼图数据
+const peiChartData = {
+  series: [
+    {
+      data: [{ 'name': '一班', 'value': 50 }, { 'name': '二班', 'value': 30 }, { 'name': '三班', 'value': 20 }, { 'name': '四班', 'value': 18 }, { 'name': '五班', 'value': 8 }],
+    },
+  ],
+};
+
+// 多坐标系混合图数据
+const mixChartData = {
+  categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
+  series: [{
+    name: '曲面',
+    type: 'area',
+    style: 'curve',
+    data: [70, 50, 85, 130, 64, 88],
+  },
+  {
+    name: '柱1',
+    index: 1,
+    type: 'column',
+    data: [40, {
+      'value': 30,
+      'color': '#f04864',
+    }, 55, 110, 24, 58],
+  },
+  {
+    name: '柱2',
+    index: 1,
+    type: 'column',
+    data: [50, 20, 75, 60, 34, 38],
+  },
+  {
+    name: '曲线',
+    type: 'line',
+    style: 'curve',
+    color: '#1890ff',
+    disableLegend: true,
+    data: [70, 50, 85, 130, 64, 88],
+  },
+  {
+    name: '折线',
+    type: 'line',
+    color: '#2fc25b',
+    data: [120, 140, 105, 170, 95, 160],
+  },
+  {
+    name: '点',
+    index: 2,
+    type: 'point',
+    color: '#f04864',
+    data: [100, 80, 125, 150, 112, 132],
+  },
+  ],
+};
+</script>
+
+<style lang="less" scoped>
+  .charts {
+    width: 100%;
+    height: 250px;
+  }
+</style>

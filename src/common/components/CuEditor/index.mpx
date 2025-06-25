@@ -1,0 +1,1101 @@
+<!--
+ * LastEditorslizijian lizijian@linhuiba.com
+ * Date2023-10-16 16:10
+ * LastEditTime2023-10-16 16:10
+ * FilePath/location-space-mp/src/common/components/CuEditor/index.mpx
+ * @Description 在线笔记
+ * https://github.com/chellel/wechat-editor-project
+ * https://ext.dcloud.net.cn/plugin?id=6365
+-->
+<template>
+  <view class="editor-container">
+    <view id="fixed-top" class="fixed-top {{isFixed ? 'isFixed' : ''}}">
+      <view class="left-toolbar">
+        <view class="toolbar-item" bindtouchend="formatformat" data-bind="undo"><IconFont icon-href="locxx-wap-chehui" width="auto" height="auto" size="40rpx"/>
+        </view>
+        <view class="toolbar-item" bindtouchend="formatformat" data-bind="redo"><IconFont icon-href="locxx-wap-chehui2" width="auto" height="auto" size="40rpx"/>
+        </view>
+      </view>
+      <button class="btn btn-primary" bindtap="save">保存</button>
+    </view>
+    <view class="fixed-top__place"/>
+    <scroll-view scroll-y style="height: {{scrollViewHeight}}px;">
+      <editor
+        id="editor"
+        class="cu-editor"
+        placeholder="{{placeholder}}"
+        read-only="{{readOnly}}"
+        show-img-size="{{showImgSize}}"
+        show-img-toolbar="{{showImgToolbar}}"
+        show-img-resize="{{showImgResize}}"
+        bindstatuschange="onStatusChange"
+        bindready="onEditorReady"
+        bindinput="onEditorInput"
+        bindfocus="onEditorFocus"
+        bindblur="onEditorBlur"
+      />
+    </scroll-view>
+    <view class="fixed-bottom" hidden="{{!toolbarShow}}" style="bottom: {{fixedBottom}}px;" bindtouchstart="">
+      <view class="toolbar selector" style="height: {{toolBarHeight}}rpx;">
+        <view class="toolbar-item-header" bindtouchend="changeKeyBoard"><i class="iconfont icon-keyboard"></i>
+        </view>
+        <view class="toolbar-item" bindtouchend="formatformat" data-bind="chooseImage"><IconFont icon-href="locxx-wap-tupian" width="auto" height="auto" size="40rpx"/></view>
+        <view
+          wx:for="{{['icon-textformat', 'icon-align-left']}}"
+          wx:key="index"
+          class="toolbar-item"
+          bindtouchend="changeSwiper"
+          data-index="{{index}}"
+        >
+          <i class="iconfont {{item}} {{toolBarContentShow && swiperCurrent == index ? 'active' : ''}}"></i>
+        </view>
+
+        <view class="toolbar-item" bindtouchend="formatformat" data-bind="address"><IconFont icon-href="locxx-wap-dingwei" width="auto" height="auto" size="40rpx"/></view>
+        <view class="toolbar-item-footer" bindtouchend="hideToolbar"><i class="iconfont icon-check"></i>
+        </view>
+      </view>
+      <swiper
+        hidden="{{!toolBarContentShow}}"
+        class="toolbar-content swiper-box"
+        style="height: {{toolBarContentHeight}}rpx;"
+        current="{{swiperCurrent}}"
+        duration="300"
+      >
+        <!-- bindtouchstart="" 禁用手动滑动 -->
+        <swiper-item wx:for="{{formatArray}}" wx:key="i" wx:for-index="i" wx:for-item="page" class="swiper-item" bindtouchstart="">
+          <block wx:if="{{page.type === 'feature'}}">
+            <view class="feature-items flex">
+              <view
+                wx:for="{{page.array}}"
+                wx:key="pindex"
+                wx:for-index="pindex"
+                wx:for-item="pitem"
+                class="feature"
+                bindtouchend="formatformat"
+                data-bind="{{pitem.name}}"
+              >
+                <view class="icon"><text class="iconfont icon-{{pitem.icon}}"/></view>
+              </view>
+              <view
+                key="address"
+                class="feature"
+                bindtouchend="formatformat"
+                data-bind="address"
+              >
+                <view class="icon"><IconFont icon-href="locxx-wap-ic_map" width="auto" height="auto" size="24px"/></view>
+              </view>
+              <view
+                key="insertDate"
+                class="feature"
+                bindtouchend="formatformat"
+                data-bind="insertDate"
+              >
+                <view class="icon"><IconFont icon-href="locxx-wap-ic_schedule" width="auto" height="auto" size="24px"/></view>
+              </view>
+            </view>
+          </block>
+
+          <block wx:elif="{{page.type === 'tool'}}">
+            <view wx:for="{{page.array}}" wx:key="pindex" wx:for-index="pindex" wx:for-item="pitem" class="tool-items flex">
+              <view
+                wx:for="{{pitem.items}}"
+                wx:key="index"
+                wx:for-index="index"
+                wx:for-item="item"
+                class="tool-item {{isActive(item, pitem) ? 'ql-active' : ''}} {{pitem.name == 'color' ? 'noBgColor' : ''}}"
+                bindtouchend="formatformat"
+                data-bind="format"
+                data-item="{{item}}"
+                data-pitem="{{pitem}}"
+              >
+                <view
+                  wx:if="{{pitem.name == 'color'}}"
+                  class="color-circle"
+                  style="background-color: {{item.value}};"
+                />
+                <i wx:elif="{{pitem.label == 'icon'}}" class="iconfont icon-{{item.icon}}"></i>
+                <text
+                  wx:else
+                  class="txt"
+                  style="font-size: {{pitem.name == 'fontSize' ? item.value : ''}}; {{item.style}}"
+                >{{item.title || item.value}}</text>
+              </view>
+            </view>
+          </block>
+        </swiper-item>
+      </swiper>
+    </view>
+  </view>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+import {
+  handleHtmlImage,
+} from './util';
+import qiniuUploader from '@/common/utils/qiniuUploader';
+import { INIT_OPTIONS_QINIU } from '@/common/utils/data';
+import { showLoading, hideLoading, showToast } from '@/common/utils/toast';
+
+createComponent({
+  properties: {
+    // editor属性，提示信息
+    placeholder: {
+      type: String,
+      value: '请输入内容',
+    },
+    // editor属性，点击图片时显示图片大小控件
+    showImgSize: {
+      type: Boolean,
+      value: false,
+    },
+    // editor属性，点击图片时显示工具栏控件
+    showImgToolbar: {
+      type: Boolean,
+      value: false,
+    },
+    // editor属性，点击图片时显示修改尺寸控件
+    showImgResize: {
+      type: Boolean,
+      value: false,
+    },
+    // 编辑器内容，必填
+    content: {
+      type: String,
+      value: '',
+    },
+    // chooseImage参数，最多可以选择的图片张数
+    count: {
+      type: Number,
+      value: 20,
+    },
+    // chooseImage参数，所选的图片的尺寸
+    sizeType: {
+      type: Array,
+      value: ['original', 'compressed'], // ['original', 'compressed']
+    },
+    // chooseImage参数，选择图片的来源
+    sourceType: {
+      type: Array,
+      value: ['album', 'camera'],
+    },
+    // 不允许上传的图片类型
+    noAllowType: {
+      type: Array,
+      value: [], // ['gif']
+    },
+  },
+
+  data: {
+    isFixed: true,
+    iphoneXBottomH: 0,
+    scrollHeightDefault: 0,
+    keyboardHeight: 0,
+    readOnly: true,
+    isDefaultFormat: true, // 首次聚集时设置默认格式
+    isIos: false,
+    inputFocus: false,
+    formats: {},
+    formatArray: [
+      {
+        type: 'tool',
+        array: [{
+          name: 'text',
+          label: 'icon',
+          items: [{
+            name: 'bold',
+            icon: 'bold',
+          },
+          {
+            name: 'italic',
+            icon: 'italic',
+          },
+          {
+            name: 'underline',
+            icon: 'underline',
+          },
+          {
+            name: 'strike',
+            icon: 'strikethrough',
+          },
+          {
+            name: 'backgroundColor',
+            value: 'yellow',
+            icon: 'fontbgcolor',
+          },
+          ],
+        },
+        {
+          name: 'defaultFormat',
+          items: [{
+            title: '标题',
+            format: {
+              fontSize: '18px',
+              bold: 'strong',
+            },
+            style: {
+              fontSize: '18px',
+              fontWeight: 'bold',
+            },
+          },
+          {
+            title: '小标题',
+            format: {
+              fontSize: '16px',
+              bold: 'strong',
+            },
+            style: {
+              fontSize: '16px',
+              fontWeight: 'bold',
+            },
+          },
+          {
+            title: '正文',
+            format: {
+              fontSize: '14px',
+            },
+            style: {
+              fontSize: '14px',
+            },
+          },
+          {
+            title: '注释',
+            format: {
+              fontSize: '12px',
+              color: '#888888',
+            },
+            style: {
+              fontSize: '12px',
+              color: '#888888',
+            },
+          },
+          ],
+        },
+        {
+          name: 'fontSize',
+          items: [{
+            title: '18',
+            value: '18px',
+          },
+          {
+            title: '16',
+            value: '16px',
+          },
+          {
+            title: '14',
+            value: '14px',
+          },
+          {
+            title: '12',
+            value: '12px',
+          },
+          {
+            title: '11',
+            value: '11px',
+          },
+          {
+            title: '10',
+            value: '10px',
+          },
+          ],
+        },
+        {
+          name: 'color',
+          items: [{
+            value: '#000000',
+          },
+          {
+            value: '#888888',
+          },
+          {
+            value: '#ffffff',
+          },
+          {
+            value: '#f6de41',
+          },
+          {
+            value: '#f68c41',
+          },
+          {
+            value: '#fd3136',
+          },
+          {
+            value: '#5ad8a6',
+          },
+          ],
+        },
+        ],
+      },
+      {
+        type: 'tool',
+        array: [{
+          name: 'align',
+          label: 'icon',
+          items: [{
+            value: 'left',
+            icon: 'align-left',
+          },
+          {
+            value: 'center',
+            icon: 'align-center',
+          },
+          {
+            value: 'right',
+            icon: 'align-right',
+          },
+          ],
+        },
+        {
+          name: 'text',
+          label: 'icon',
+          items: [{
+            name: 'list',
+            value: 'ordered',
+            icon: 'orderedlist',
+          },
+          {
+            name: 'list',
+            value: 'bullet',
+            icon: 'unorderedlist',
+          },
+          {
+            name: 'indent',
+            icon: 'outdent',
+            value: '+1',
+          },
+          {
+            name: 'indent',
+            icon: 'indent',
+            value: '-1',
+          },
+          ],
+        },
+        {
+          name: 'lineHeight',
+          items: [{
+            value: 1,
+          },
+          {
+            value: 1.3,
+          },
+          {
+            value: 1.5,
+          },
+          {
+            value: 2,
+          },
+          {
+            value: 3,
+          },
+          ],
+        },
+        ],
+      },
+    ],
+    curLength: 0,
+    swiperCurrent: 0,
+    toolbarShow: false,
+    toolBarContentShow: false,
+    fixedTopHeight: 0, // 顶部工具栏高度
+    toolBarHeight: 100, // 工具栏高度
+    toolBarContentHeight: 530, // 工具栏内容高度
+    progress: true, // 判断是否监听上传进度变化
+    fixedTime: null,
+  },
+
+  computed: {
+    fullToolBarHeight() {
+      let height = 0;
+      this.data.toolbarShow ? height += this.data.toolBarHeight : '';
+      this.data.toolBarContentShow ? height += this.data.toolBarContentHeight : '';
+      return mpx.upx2px(height);
+    },
+    scrollHeight() {
+      return this.data.scrollHeightDefault - this.data.fixedTopHeight - this.fullToolBarHeight;
+    },
+    scrollViewHeight() {
+      const scrollViewHeight = this.scrollHeight - this.data.keyboardHeight;
+      return this.data.keyboardHeight > 0 ? scrollViewHeight + this.data.iphoneXBottomH : scrollViewHeight;
+    },
+    fixedBottom() {
+      return this.data.isIos || this.data.iphoneXBottomH > 0 ? (this.data.keyboardHeight > 0 ? this.data.keyboardHeight
+        : this.data.iphoneXBottomH) : 0;
+    },
+  },
+
+  observers: {
+    'keyboardHeight': function(newVal, oldVal) {
+      if (newVal > 0) {
+        this.setData({
+          toolBarContentShow: false,
+        });
+      }
+    },
+    'toolbarShow': function(val) {
+      if (!val) {
+        this.setData({
+          toolBarContentShow: val,
+        });
+      }
+    },
+  },
+
+  attached() {
+    this.index = 0;
+    this.createdAt = Date.now();
+    this.getUid = () => `wux-upload--${this.createdAt}-${++this.index}`;
+    this.uploadTask = {};
+    this.tempFilePaths = [];
+
+    const query = mpx.createSelectorQuery().in(this);
+    query.select('#fixed-top').boundingClientRect(res => {
+      this.setData({
+        fixedTopHeight: res.height,
+      });
+    }).exec();
+
+    mpx.getSystemInfo({
+      success: e => {
+        this.setData({
+          isIos: e.platform === 'ios',
+        });
+        const isIphoneX = (e.platform === 'devtools' || this.data.isIos) && e.safeArea.top === 44;
+        this.setData({
+          iphoneXBottomH: isIphoneX ? 34 : 0,
+          scrollHeightDefault: e.windowHeight - 34,
+        });
+      },
+    });
+
+    mpx.onKeyboardHeightChange(res => {
+      let keyboardHeight = this.data.keyboardHeight;
+      if (res.height === keyboardHeight) return;
+
+      this.setData({
+        keyboardHeight: res.height,
+      });
+      const duration = res.height > 0 ? res.duration * 1000 : 0;
+      keyboardHeight = res.height;
+      setTimeout(() => {
+        mpx.pageScrollTo({
+          scrollTop: 0,
+          success: () => {
+            this.updatePosition(keyboardHeight);
+            this.editorCtx.scrollIntoView(); // 使得编辑器光标处滚动到窗口可视区域内
+          },
+        });
+      }, duration);
+    });
+  },
+
+  detached() {
+    console.log('editor detached');
+    clearInterval(this.data.fixedTime);
+  },
+
+  methods: {
+    isActive(item, pitem) {
+      let { name, value, format } = item;
+      !name ? name = pitem.name : '';
+      if (format) {
+        for (const name in format) {
+          if (this.data.formats[name] !== format[name]) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return value ? this.data.formats[name] === value : this.data.formats[name];
+      }
+    },
+
+    hideKeyboard() {
+      this.editorCtx.blur();
+    },
+
+    changeSwiper(e) {
+      const current = e.currentTarget.dataset.index;
+      this.hideKeyboard();
+      this.setData({
+        toolBarContentShow: true,
+        swiperCurrent: current,
+      });
+      setTimeout(() => {
+        this.editorCtx.format('direction', '');
+      }, 200);
+    },
+
+    updatePosition(keyboardHeight) {
+      this.setData({
+        keyboardHeight: keyboardHeight,
+      });
+    },
+
+    onEditorReady(e) {
+      const that = this;
+      mpx.createSelectorQuery()
+        .in(this)
+        .select('#editor')
+        .context(function(res) {
+          that.editorCtx = res.context;
+          that.setValue(that.data.content);
+
+          that.setData({
+            readOnly: false,
+          });
+        })
+        .exec();
+    },
+
+    onEditorInput(e) {
+      const {
+        text,
+      } = e.detail;
+      this.setData({
+        curLength: text.length - 1,
+      });
+    },
+
+    onEditorFocus(e) {
+      this.setData({
+        toolbarShow: true,
+        inputFocus: true,
+      });
+      if (this.data.isDefaultFormat) {
+        // 设置默认格式
+        this.editorCtx.format('fontSize', '14px');
+        this.editorCtx.format('align', 'left');
+        this.setData({
+          isDefaultFormat: false,
+        });
+      }
+      // 定时保存
+      if (!this.data.fixedTime) {
+        const fixedTime = setInterval(() => {
+          this.getContents((res) => {
+            this.triggerEvent('fixedTimeSave', handleHtmlImage(res.html, true));
+          });
+        }, 8000);
+        this.setData({
+          fixedTime: fixedTime,
+        });
+      }
+    },
+
+    onEditorBlur() {
+      this.editorCtx.blur();
+      this.updatePosition(0);
+      this.setData({
+        inputFocus: false,
+      });
+    },
+
+    changeKeyBoard() {
+      this.setData({
+        toolBarContentShow: false,
+      });
+      this.hideKeyboard();
+    },
+
+    hideToolbar() {
+      this.hideKeyboard();
+      this.setData({
+        toolbarShow: false,
+      });
+    },
+
+    // 修改默认样式
+    formatDefault(format) {
+      for (const name in format) {
+        this.editorCtx.format(name, format[name]);
+      }
+      if (format.bold) {
+        this.editorCtx.format('bold', true);
+      } else if (this.data.formats.bold) {
+        this.editorCtx.format('bold', '');
+      }
+      this.editorCtx.format('lineHeight', ''); // 选择默认样式时，取消当前行高的选择
+    },
+
+    formatformat(e) {
+      const bind = e.currentTarget.dataset.bind;
+      const item = e.currentTarget.dataset.item || {};
+      const pitem = e.currentTarget.dataset.pitem || {};
+
+      item.name = item.name || pitem.name || '';
+      const {
+        name,
+        value,
+      } = item;
+
+      switch (bind) {
+        case 'format': // 改变文本样式
+          if (!name) return;
+          if (name === 'defaultFormat') { // 选择标题样式时，取消当前字号的选择
+            this.formatDefault(item.format);
+          } else {
+            this.editorCtx.format(name, value);
+          }
+          break;
+        case 'removeFormat': // 删除字体样式
+          this.editorCtx.removeFormat();
+          break;
+        case 'insertDate': // 插入时间
+          var date = new Date();
+          var formatDate = `${date.getFullYear()} 年${date.getMonth() + 1} 月${date.getDate()} 日`;
+          this.editorCtx.insertText({
+            text: formatDate,
+          });
+          break;
+        case 'address': // 插入地址
+          mpx.getLocation({
+            type: 'wgs84',
+            success: (res) => {
+              console.log('当前位置的经度：' + res.longitude);
+              console.log('当前位置的纬度：' + res.latitude);
+              mpx.chooseLocation({
+                longitude: res.longitude,
+                latitude: res.latitude,
+                success: (res) => {
+                  console.log(res);
+                  this.editorCtx.insertText({
+                    text: '\n',
+                  });
+                  this.editorCtx.insertText({
+                    text: `地址：${res.name}（${res.address}）`,
+                  });
+                  // 加属性修改，让修改位置显示在原来光标位置（不加会回到顶部）
+                  this.editorCtx.format('direction', '');
+                },
+                fail: function(res) {
+                  console.log(res);
+                },
+              });
+            },
+          });
+          break;
+        case 'check': // 设置当前行为待办列表格式
+          this.editorCtx.format('list', 'check');
+          break;
+        case 'undo': // 撤销操作
+          this.editorCtx.undo();
+          break;
+        case 'redo': // 恢复操作
+          this.editorCtx.redo();
+          break;
+        case 'insertDivider': // 添加分割线
+          this.editorCtx.insertDivider();
+          break;
+        case 'clear': // 清除内容
+          this.editorCtx.clear();
+          break;
+        case 'chooseImage': // 插入相册图片
+          this.chooseImage();
+          break;
+        case 'chooseImagebyCamera': // 拍摄
+          this.chooseImage(true);
+          break;
+      }
+    },
+
+    onStatusChange(e) {
+      this.setData({
+        formats: e.detail,
+      });
+      console.log(this.data.formats);
+    },
+
+    chooseImage(onlyCamera) {
+      qiniuUploader.init(INIT_OPTIONS_QINIU('image'));
+      const success = res => {
+        this.tempFilePaths = res.tempFiles.map(item => ({
+          url: item.path,
+          size: item.size,
+          type: item.path.substring(item.path.lastIndexOf('.') + 1, item.path.length),
+          uid: this.getUid(),
+        }));
+
+        /* 上传文件 start */
+        const request = this.tempFilePaths.map(file => {
+          return new Promise((resolve, reject) => {
+            qiniuUploader.upload(file.url, (res) => {
+              const { url } = res;
+              resolve({ url, file });
+            }, (err) => {
+              console.log(err);
+              reject(err);
+            },
+            );
+          });
+        });
+        showLoading('上传中...');
+        const that = this;
+        Promise.all(request).then(res => {
+          res.forEach(item => {
+            that.insertImage(item.url + '-pms_original', item.file);
+          });
+          hideLoading();
+          showToast('上传成功');
+        }).catch(() => {
+          hideLoading();
+          showToast('图片上传失败！');
+        });
+        /* 上传文件 end */
+      };
+
+      const {
+        count,
+        sizeType,
+      } = this.data;
+      setTimeout(() => {
+        mpx.chooseImage({
+          count,
+          sizeType,
+          sourceType: onlyCamera ? ['camera'] : this.data.sourceType,
+          success,
+        });
+      }, 100);
+    },
+
+    insertImage(src, file) {
+      var that = this;
+      that.editorCtx.insertImage({
+        src,
+        width: '100%',
+        data: {
+          id: file.uid,
+        },
+        extClass: 'editor--editor-img', // 添加到图片 img标签上的类名为editor-img，设置前缀editor--才生效。部分机型点击图片右边的光标时不灵敏，需将样式editor-img宽度调小 max-width:98%;从而在图片右侧中留出部分位置供用户点击聚集。
+        success(e) {
+          // 真机会自动插入一行空格
+        },
+      });
+    },
+
+    onProgress(file, res, uploadCount) {
+      if (res.progress !== 100) {
+        mpx.showToast({
+          title: `正在上传图片${file.index}/${uploadCount}`,
+          icon: 'none',
+        });
+      }
+
+      const targetItem = {
+        ...file,
+        progress: res.progress,
+        res,
+      };
+      const info = {
+        file: targetItem,
+      };
+
+      this.triggerEvent('progress', info);
+    },
+
+    bytesToSize: function(bytes) {
+      if (bytes === 0) return '0 B';
+      var k = 1024;
+      var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      var i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    },
+
+    setValue(value) {
+      if (this.editorCtx) {
+        this.editorCtx.setContents({
+          html: value,
+          success: () => {
+            this.getContents(res => {
+              this.onEditorInput({
+                detail: {
+                  html: res.html,
+                  text: res.text,
+                },
+              });
+              this.triggerEvent('update', res);
+            });
+          },
+        });
+      }
+    },
+
+    getContents(callback) {
+      // 由于获取编辑器内容getContents为异步，因此需要使用callback回调
+      this.editorCtx.getContents({
+        success: res => {
+          callback(res);
+        },
+      });
+    },
+
+    save() {
+      this.editorCtx.getContents({
+        success: res => {
+          console.log(res);
+          res.html = handleHtmlImage(res.html, true);
+          this.triggerEvent('save', res);
+        },
+        complete: res => {
+          console.log('getContents complete');
+        },
+      });
+    },
+  },
+});
+</script>
+
+<style lang="less" scoped>
+  @import "./iconfont.css";
+
+  $bg-color: #F7F7F7;
+  $bg-color-hover: #EAEAEA;
+  $main-color: #5B8FF9;
+
+  .fixed-top {
+    display: flex;
+    position: fixed;
+    top: -88rpx;
+    z-index: 999;
+    box-sizing: border-box;
+    border-bottom: solid 1rpx #F1F1F1;
+    padding: 0 30rpx;
+    line-height: 88rpx;
+    background-color: #FFFFFF;
+    transition: all 0.3s ease;
+    justify-content: space-between;
+
+    .left-toolbar {
+      display: flex;
+      justify-content: space-between;
+      width: 120rpx;
+      color: #333333;
+    }
+
+    &.isFixed {
+      top: 0;
+    }
+
+    .btn {
+      float: right;
+      overflow: visible;
+      position: relative;
+      margin: 14rpx 0;
+      border: 0 !important;
+      border-radius: 6rpx;
+      padding-right: 0;
+      padding-left: 0;
+      width: 100%;
+      width: 100rpx;
+      height: 60rpx;
+      font-size: 26rpx;
+      line-height: 60rpx;
+      text-align: center;
+
+      &::after {
+        border: none;
+      }
+    }
+
+    .btn-primary {
+      border-radius: 8rpx;
+      color: #FFFFFF;
+      background: #006AFF !important;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .fixed-top,
+  .fixed-top__place {
+    width: 100%;
+    height: 88rpx;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .cu-editor {
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 40rpx 35rpx;
+    width: 100%;
+    height: 100%;
+    min-height: unset !important;
+    font-size: 28rpx;
+    line-height: 1.5;
+  }
+
+  .editor-img {
+    max-width: 98% !important;
+  }
+
+  .ql-active {
+    background-color: $bg-color-hover;
+
+    .color-circle {
+      border: solid 1px;
+    }
+  }
+
+  .noBgColor {
+    background-color: none !important;
+  }
+
+  .fixed-bottom {
+    position: fixed;
+    right: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 99999;
+    /* stylelint-disable-next-line function-no-unknown */
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    width: 100%;
+    background: #FFFFFF;
+  }
+
+  .toolbar {
+    display: flex;
+    box-sizing: border-box;
+    border: 1rpx solid #E5E5E5;
+    border-right: none;
+    border-left: none;
+    background: #FFFFFF;
+    align-items: center;
+    justify-content: space-between;
+
+    .iconfont {
+      display: inline-block;
+      position: relative;
+      font-size: 40rpx;
+      text-align: center;
+      cursor: pointer;
+
+      &.active::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-bottom: solid 6rpx #000000;
+        width: 100%;
+        height: 6rpx;
+        content: "";
+      }
+    }
+
+    .toolbar-item {
+      height: 100rpx;
+      line-height: 100rpx;
+      flex: 1;
+      text-align: center;
+
+      &:active {
+        opacity: 0.4;
+      }
+    }
+
+    .toolbar-item-header,
+    .toolbar-item-footer {
+      width: 108rpx;
+      text-align: center;
+    }
+
+    .toolbar-item-header {
+      border-right: solid 1rpx $uni-border-color;
+    }
+
+    .toolbar-item-footer {
+      border-left: solid 1rpx $uni-border-color;
+      font-weight: bold;
+      color: #5B8FF9;
+    }
+  }
+
+  .toolbar-content {
+    background-color: #FFFFFF;
+  }
+
+  .swiper-item {
+    box-sizing: border-box;
+    padding: 0 30rpx;
+  }
+
+  .tool-items {
+    overflow: hidden;
+    margin: 32rpx 0;
+    border-radius: 16rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    color: #323232;
+    background-color: $bg-color;
+
+    .tool-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:active {
+        background-color: $bg-color-hover;
+      }
+    }
+
+    .iconfont {
+      display: inline-block;
+      width: 80rpx;
+      height: 80rpx;
+      font-size: 40rpx;
+      line-height: 80rpx;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .color-circle {
+      border-radius: 50%;
+      width: 40rpx;
+      height: 40rpx;
+    }
+
+    .txt {
+      font-size: 14px;
+    }
+  }
+
+  .feature {
+    margin: 30rpx 26rpx 0;
+    text-align: center;
+
+    &-items {
+      flex-wrap: wrap;
+    }
+
+    .icon {
+      margin-bottom: 10rpx;
+      width: 120rpx;
+      height: 120rpx;
+      line-height: 120rpx;
+      color: #323232;
+      background-color: $bg-color;
+
+      &:active {
+        background-color: $bg-color-hover;
+      }
+
+      .iconfont {
+        font-size: 42rpx;
+      }
+    }
+  }
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "IconFont": "@/common/components/IconFont/index.mpx"
+  }
+}
+</script>

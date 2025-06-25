@@ -27,6 +27,9 @@ createApp({
     "pages": [
       "./pages/login/entry",
       "./pages/index/entry"
+    ],
+    "packages": [
+      "./subPackages/subPackagesDoc/demo/entry?root=subPackagesDoc"
     ]
   }
 </script>

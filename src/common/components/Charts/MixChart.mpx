@@ -1,0 +1,200 @@
+<!-- 在微信小程序中使用 uCharts
+官方指南：https://www.ucharts.cn/v2/#/guide/index
+官方示例：https://www.ucharts.cn/v2/#/demo/index -->
+<!--
+ * @Description 混合图表
+-->
+<template>
+  <view class="container">
+
+    <view wx:if="{{title}}" class="tip-title">
+      {{title}}
+    </view>
+    <canvas
+      id="{{chartId}}"
+      type="2d"
+      class="charts"
+      style="height: {{height}}; width: {{width}};"
+      bindtap="tap"
+    />
+  </view>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+// @ignore
+import UCharts from 'src/pages/subPagesBusiness/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+import { themeColor } from '@/common/utils/data';
+
+// 记录图表实例
+const uChartsInstance = {};
+
+createComponent({
+  properties: {
+    // 标题
+    title: {
+      type: String,
+      value: '',
+    },
+    // chart ID
+    chartId: {
+      type: String,
+      value: 'MixChart',
+    },
+    // 图表主题 "blue" | "green" | "purple"
+    theme: {
+      type: String,
+      value: 'blue',
+    },
+    // 图表外层包装容器的类名
+    wrapperClassName: {
+      type: String,
+      value: '',
+    },
+    width: {
+      type: String,
+      value: '100%',
+    },
+    // x轴数据
+    xAxisData: {
+      type: Array,
+      value: [],
+    },
+    // y轴数据
+    seriesData: {
+      type: Array,
+      value: [],
+    },
+    // y坐标轴数据
+    yAxisData: {
+      type: Array,
+      value: [],
+    },
+    // 高度
+    height: {
+      type: String,
+      value: '270px',
+    },
+    // 更多配置 详见https://www.ucharts.cn/v2/#/demo/index
+    config: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  observers: {
+    'xAxisData': function() {
+      this.init();
+    },
+  },
+
+  // attached() {
+  //   this.init();
+  // },
+
+  methods: {
+    init() {
+      // 模拟从服务器获取数据时的延时
+      setTimeout(() => {
+        this.drawMixChart(this.data.chartId);
+      }, 200);
+    },
+
+    // 图表点击
+    tap(e) {
+      // e.target.id 使用的是 id 属性
+      uChartsInstance[e.target.id].touchLegend(e);
+      uChartsInstance[e.target.id].showToolTip(e);
+    },
+
+    /**
+     * @description 绘制图表-混合图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawMixChart(id) {
+      const query = mpx.createSelectorQuery().in(this);
+
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'mix',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              categories: this.data.xAxisData,
+              series: this.data.seriesData,
+              animation: true,
+              background: '#FFFFFF',
+              color: themeColor[this.data.theme],
+              padding: [15, 15, 0, 5],
+              enableScroll: false,
+              legend: {},
+              xAxis: {
+                axisLine: false,
+                disableGrid: true,
+                // gridType: 'dash',
+                // dashLength: 4,
+                // gridColor: '#CCCCCC',
+              },
+              yAxis: {
+                disabled: false,
+                axisLine: false,
+                disableGrid: false,
+                splitNumber: 5,
+                gridType: 'dash',
+                dashLength: 4,
+                gridColor: '#CCCCCC',
+                padding: 10,
+                showTitle: false,
+                data: this.data.yAxisData,
+              },
+              extra: {
+                mix: {
+                  column: {
+                    width: 11,
+                  },
+                  line: {
+                    width: 2,
+                  },
+                },
+              },
+              ...this.data.config,
+            });
+          });
+      });
+    },
+  },
+});
+</script>
+
+<style lang="less" scoped>
+.container {
+  padding: 12px;
+
+  .tip-title {
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000;
+  }
+
+  .charts {
+    width: 100%;
+  }
+}
+</style>

@@ -1,0 +1,177 @@
+<!-- 在微信小程序中使用 uCharts
+官方指南：https://www.ucharts.cn/v2/#/guide/index
+官方示例：https://www.ucharts.cn/v2/#/demo/index -->
+<!--
+ * @Description 饼图
+-->
+<template>
+  <view class="container">
+
+    <view wx:if="{{title}}" class="tip-title">
+      {{title}}
+    </view>
+    <canvas
+      id="{{chartId}}"
+      type="2d"
+      class="charts"
+      style="height: {{height}}; width: {{width}};"
+      bindtap="tap"
+    />
+  </view>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+// @ignore
+import UCharts from 'src/pages/subPagesBusiness/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+import { themeColor } from '@/common/utils/data';
+
+// 记录图表实例
+const uChartsInstance = {};
+
+createComponent({
+  properties: {
+    // 标题
+    title: {
+      type: String,
+      value: '',
+    },
+    // chart ID
+    chartId: {
+      type: String,
+      value: 'PieChart',
+    },
+    // 图表主题 "blue" | "green" | "purple"
+    theme: {
+      type: String,
+      value: 'blue',
+    },
+    // 图表外层包装容器的类名
+    wrapperClassName: {
+      type: String,
+      value: '',
+    },
+    width: {
+      type: String,
+      value: '100%',
+    },
+    // 数据
+    seriesData: {
+      type: Array,
+      value: [],
+    },
+    // 高度
+    height: {
+      type: String,
+      value: '270px',
+    },
+    // 更多配置 详见https://www.ucharts.cn/v2/#/demo/index
+    config: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  observers: {
+    'seriesData': function() {
+      this.init();
+    },
+  },
+
+  // attached() {
+  //   this.init();
+  // },
+
+  methods: {
+    init() {
+      // 模拟从服务器获取数据时的延时
+      setTimeout(() => {
+        this.drawPieChart(this.data.chartId);
+      }, 200);
+    },
+
+    // 图表点击
+    tap(e) {
+      // e.target.id 使用的是 id 属性
+      uChartsInstance[e.target.id].touchLegend(e);
+      uChartsInstance[e.target.id].showToolTip(e);
+    },
+
+    /**
+     * @description 绘制图表-饼图
+     * @param id canvas-id
+     * @param data 图表数据
+     */
+    drawPieChart(id) {
+      const query = mpx.createSelectorQuery().in(this);
+
+      setTimeout(() => {
+        query.select(`#${id}`) // 在 WXML 中填入的 id
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            // Canvas 对象
+            const canvas = res[0].node;
+            // Canvas 画布的实际绘制宽高
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+            // Canvas 绘制上下文
+            const ctx = canvas.getContext('2d');
+            // 初始化画布大小
+            const dpr = mpx.getWindowInfo().pixelRatio;
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+            uChartsInstance[id] = new UCharts({
+              type: 'pie',
+              context: ctx,
+              width: renderWidth, // 单位 px
+              height: renderHeight, // 单位 px
+              series: this.data.seriesData,
+              animation: true,
+              background: '#FFFFFF',
+              color: themeColor[this.data.theme],
+              padding: [5, 5, 5, 5],
+              enableScroll: false,
+              legend: {
+                show: false,
+              },
+              extra: {
+                pie: {
+                  activeOpacity: 0.5,
+                  activeRadius: 10,
+                  offsetAngle: 0,
+                  labelWidth: 15,
+                  border: true,
+                  borderWidth: 1,
+                  borderColor: '#FFFFFF',
+                },
+                tooltip: {
+                  legendShape: 'square',
+                  showBox: false,
+                },
+              },
+              ...this.data.config,
+            });
+          });
+      });
+    },
+  },
+});
+</script>
+
+<style lang="less" scoped>
+.container {
+  padding: 12px;
+
+  .tip-title {
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000;
+  }
+
+  .charts {
+    width: 100%;
+  }
+}
+</style>

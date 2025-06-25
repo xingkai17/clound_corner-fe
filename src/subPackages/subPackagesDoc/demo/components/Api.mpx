@@ -1,0 +1,100 @@
+<!-- 接口使用 -->
+<template>
+  <view class="demo">
+    <h3>LocationSpace 接口</h3>
+    <button size="mini" bindtap="testLocationSpaceApi">点我调用</button>
+
+    <h3>LCN 接口</h3>
+    <button size="mini" bindtap="testLcnApi">点我调用</button>
+
+    <h3>账号中心 接口</h3>
+    <button size="mini" bindtap="testMirageApi">点我调用</button>
+
+    <h3>PMS 接口</h3>
+    <button size="mini" bindtap="testPmsApi">点我调用</button>
+
+  </view>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+import { _get, _post } from 'src/common/request/index';
+
+createComponent({
+  methods: {
+    // 调用location-space接口
+    testLocationSpaceApi() {
+      _post('/api/brand/wechat/follow/status', { openId: '2123' }).then((response) => {
+        console.log('response', response);
+        mpx.showToast({ icon: 'none', title: `调用成功：${response.id || ''} ${response.name || ''}` });
+      }, () => {
+        // console.log('err', err);
+        // mpx.showToast({ icon: 'none', title: 'testLcnApi err' });
+      }).finally(() => {
+        console.log('finally');
+        setTimeout(() => {
+          mpx.showToast({ icon: 'none', title: 'testLcnApi finally' });
+        }, 1000);
+      });
+    },
+
+    // 调用LCN接口
+    testLcnApi() {
+      _get('/api/h5/locxx/permission/currUserInfo', null, { proxyApi: '/lcn-api' }).then((response) => {
+        console.log('response', response);
+        mpx.showToast({ icon: 'none', title: `调用成功：${response.id || ''} ${response.name || ''}` });
+      }, () => {
+        // console.log('err', err);
+        // mpx.showToast({ icon: 'none', title: 'testLcnApi err' });
+      }).finally(() => {
+        console.log('finally');
+        setTimeout(() => {
+          mpx.showToast({ icon: 'none', title: 'testLcnApi finally' });
+        }, 1000);
+      });
+    },
+
+    // 调用账号中心接口
+    testMirageApi() {
+      _get('/api/sendCode', { mobile: '13957785093' }, { proxyApi: '/mirage-api' }).then((response) => {
+        console.log('response', response);
+        mpx.showToast({ icon: 'none', title: `调用成功：${response}` });
+      }, (err) => {
+        console.log('err', err);
+        mpx.showToast({ icon: 'none', title: 'testMirageApi err' });
+      }).finally(() => {
+        console.log('finally');
+        setTimeout(() => {
+          mpx.showToast({ icon: 'none', title: 'testMirageApi finally' });
+        }, 1000);
+      });
+    },
+
+    // 调用PMS接口
+    testPmsApi() {
+      const params = {
+        appId: '1400814300',
+        key: '7e122e9e7e89af94f04a53ee2b71a4222f97d78043741c06a906dedf1e120e47',
+      };
+      _get('/v1/im/getUserSig', params, { proxyApi: '/pms-api' }).then((response) => {
+        console.log('response', response);
+        mpx.showToast({ icon: 'none', title: `调用成功：${response.imUserId || ''} ${response.userId || ''}` });
+      }, (err) => {
+        console.log('err', err);
+        mpx.showToast({ icon: 'none', title: 'testPmsApi err' });
+      }).finally(() => {
+        console.log('finally');
+        setTimeout(() => {
+          mpx.showToast({ icon: 'none', title: 'testPmsApi finally' });
+        }, 1000);
+      });
+    },
+  },
+});
+</script>
+
+<style lang="less" scoped>
+.uni-padding-wrap {
+  padding: 15px;
+}
+</style>

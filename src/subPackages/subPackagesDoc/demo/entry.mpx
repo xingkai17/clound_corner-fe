@@ -1,0 +1,361 @@
+<!-- 展示组件 -->
+<template>
+  <div class="demo-component">
+    <div class="wrapper">
+      <view>
+        <button class="btn-primary" bindtap="showDialog">选择需要预览的组件</button>
+
+        <Modal type="right" show-modal="{{visible}}" bind:update:show-modal="updateVisible">
+          <div class="dialog__wrapper">
+            <div class="dialog__header">请选择需要预览的组件</div>
+            <div class="dialog__container">
+              <radio-group bindchange="handleChange">
+                <div wx:for="{{componentListGroup}}" wx:key="index_group" wx:for-index="index_group" wx:for-item="item_group" class="{{index_group > 0 ? 'mt-10' : ''}}">
+                  <div class="fn-16 bold mb-8">{{item_group.label}}</div>
+                  <block wx:if="{{Array.isArray(item_group.componentList) && item_group.componentList.length}}">
+                    <label wx:for="{{item_group.componentList}}" wx:key="value" wx:for-item="item" class="mb-4">
+                      <radio value="{{item.value}}" checked="{{item.value === value}}">{{item.label}}</radio>
+                    </label>
+                  </block>
+                  <div wx:else>暂无组件</div>
+                </div>
+              </radio-group>
+            </div>
+          </div>
+        </Modal>
+      </view>
+
+      <view class="mt-20">
+        <h2 class="mb-15 bold">
+          {{value.replace(/Demo$/, '')}} {{componentTitle}}
+          <span class="fn-12 font-weight-normal color-primary ml-6" bindtap="copy" data-value="{{value}}">复制 demo 名称</span>
+        </h2>
+
+        <!-- 嗨~看这里~~~需要进行展示的组件，请添加到这里~~~~ -->
+        <!-- 建议在组件内根节点添加 class="demo" 后，使用 h3（功能标题）、p（功能描述） 修饰组件示例，如 src/common/components/Upload/FilePreviewDemo.vue -->
+        <!-- 文档 Docs -->
+        <ApiDemo wx:if="{{value === 'ApiDemo'}}"/>
+        <WxDemo wx:if="{{value === 'WxDemo'}}"/>
+
+        <!-- 通用 Basic -->
+        <V1LoadingToastDemo wx:if="{{value === 'V1LoadingToastDemo'}}"/>
+        <V1PopDraggerDemo wx:if="{{value === 'V1PopDraggerDemo'}}"/>
+        <IconFontDemo wx:if="{{value === 'IconFontDemo'}}"/>
+        <ScrollViewDemo wx:if="{{value === 'ScrollViewDemo'}}"/>
+        <ModalDemo wx:if="{{value === 'ModalDemo'}}"/>
+        <ContainerDemo wx:if="{{value === 'ContainerDemo'}}"/>
+
+        <!-- 数据 Data -->
+        <V1EmptyDemo wx:if="{{value === 'V1EmptyDemo'}}"/>
+        <V1TabsDemo wx:if="{{value === 'V1TabsDemo'}}"/>
+        <V1TagDemo wx:if="{{value === 'V1TagDemo'}}"/>
+        <DetailItemDemo wx:if="{{value === 'DetailItemDemo'}}"/>
+        <SingleImageDemo wx:if="{{value === 'SingleImageDemo'}}"/>
+        <ScrollViewImageDemo wx:if="{{value === 'ScrollViewImageDemo'}}"/>
+        <ImageNineCardDemo wx:if="{{value === 'ImageNineCardDemo'}}"/>
+        <FilePreviewDemo wx:if="{{value === 'FilePreviewDemo'}}"/>
+        <CheckboxGroupDemo wx:if="{{value === 'CheckboxGroupDemo'}}"/>
+        <PopupCheckboxGroupDemo wx:if="{{value === 'PopupCheckboxGroupDemo'}}"/>
+        <PopupSecondCheckboxGroupDemo wx:if="{{value === 'PopupSecondCheckboxGroupDemo'}}"/>
+        <PopupRadioDemo wx:if="{{value === 'PopupRadioDemo'}}"/>
+        <PopupTreeCitiesDemo wx:if="{{value === 'PopupTreeCitiesDemo'}}"/>
+        <UChartsDemo wx:if="{{value === 'UChartsDemo'}}"/>
+
+        <!-- 导航 Nav -->
+
+        <!-- 表单 Form -->
+        <V1FuzzyDemo wx:if="{{value === 'V1FuzzyDemo'}}"/>
+        <V1SliderStepperDemo wx:if="{{value === 'V1SliderStepperDemo'}}"/>
+        <V1CascadePickerDemo wx:if="{{value === 'V1CascadePickerDemo'}}"/>
+        <V1ProvinceListDemo wx:if="{{value === 'V1ProvinceListDemo'}}"/>
+        <V1CheckListDemo wx:if="{{value === 'V1CheckListDemo'}}"/>
+        <FormDemo wx:if="{{value === 'FormDemo'}}"/>
+        <FileUploadDemo wx:if="{{value === 'FilesUploadDemo'}}"/>
+        <CalendarDemo wx:if="{{value === 'CalendarDemo'}}"/>
+        <FormTextareaDemo wx:if="{{value === 'Textarea'}}"/>
+
+        <!-- 业务 Business -->
+        <PointDemo wx:if="{{value === 'PointDemo'}}"/>
+        <PointModalDemo wx:if="{{value === 'PointModalDemo'}}"/>
+        <ContactService wx:if="{{value === 'ContactService'}}"/>
+        <LuckyCanvasDemo wx:if="{{value === 'LuckyCanvasDemo'}}"/>
+
+        <!-- 其他 Other -->
+
+      </view>
+    </div>
+    <div class="no-padding">
+      <DropdownDemo wx:if="{{value === 'DropdownDemo'}}"/>
+      <PageFilter wx:if="{{value === 'PageFilter'}}" bindchange="filterChange"/>
+      <PageFilterDemo wx:if="{{value === 'PageFilterDemo'}}" bindchange="filterChange"/>
+      <ButtonWrapDemo wx:if="{{value === 'ButtonWrapDemo'}}"/>
+      <EmptyDemo wx:if="{{value === 'EmptyDemo'}}"/>
+      <OfficialAccountModalDemo wx:if="{{value === 'OfficialAccountModalDemo'}}"/>
+    </div>
+  </div>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+import { camelize, capitalize, getItemLabelFromObjectArray } from '@lhb/func';
+import { DEFAULT_CATEGORY, categoryMap } from './config';
+
+createComponent({
+  data: {
+    visible: false,
+    value: 'IconFontDemo',
+    // 嗨~看这里~~~需要进行展示的组件，请添加到这里~~~~
+    options: [
+      // 文档 Docs
+      { category: 'Docs', value: 'ApiDemo', label: '接口使用' },
+      { category: 'Docs', value: 'WxDemo', label: '微信小程序功能' },
+
+      // 通用 Basic
+      { category: 'Basic', value: 'V1LoadingToastDemo', label: 'V1-加载弹窗' },
+      { category: 'Basic', value: 'V1PopDraggerDemo', label: 'V1-可拖拽弹层' },
+      { category: 'Basic', value: 'IconFontDemo', label: '图标' },
+      { category: 'Basic', value: 'ScrollViewDemo', label: '区域滚动视图' },
+      { category: 'Basic', value: 'ModalDemo', label: '弹框' },
+      { category: 'Basic', value: 'ButtonWrapDemo', label: '按钮包裹' },
+      { category: 'Basic', value: 'DropdownDemo', label: '下拉菜单' },
+      { category: 'Basic', value: 'PageFilter', label: '筛选项' },
+      { category: 'Basic', value: 'PageFilterDemo', label: '0201筛选项' },
+      { category: 'Basic', value: 'EmptyDemo', label: '缺省页' },
+      { category: 'Basic', value: 'ContainerDemo', label: '容器' },
+
+      // 数据 Data
+      { category: 'data', value: 'V1EmptyDemo', label: 'V1-空数据' },
+      { category: 'data', value: 'V1TabsDemo', label: 'V1-标签页' },
+      { category: 'data', value: 'V1TagDemo', label: 'V1-标签' },
+      { category: 'data', value: 'DetailItemDemo', label: '详情展示项' },
+      { category: 'data', value: 'SingleImageDemo', label: '图片显示' },
+      { category: 'data', value: 'ScrollViewImageDemo', label: '多张图片显示' },
+      { category: 'data', value: 'ImageNineCardDemo', label: '九宫格显示' },
+      { category: 'data', value: 'FilePreviewDemo', label: '预览文件' },
+      { category: 'data', value: 'CheckboxGroupDemo', label: '复选框组' },
+      { category: 'data', value: 'PopupCheckboxGroupDemo', label: '复选框组-弹窗' },
+      { category: 'data', value: 'PopupRadioDemo', label: '单选二级-弹窗' },
+      { category: 'data', value: 'PopupTreeCitiesDemo', label: '省市区-弹窗' },
+      { category: 'data', value: 'UChartsDemo', label: '图表' },
+
+      // 导航 Nav
+
+      // 表单 Form
+      { category: 'Form', value: 'V1FuzzyDemo', label: 'V1-联想查询' },
+      { category: 'Form', value: 'V1SliderStepperDemo', label: 'V1-刻度条' },
+      { category: 'Form', value: 'V1CascadePickerDemo', label: 'V1-级联' },
+      { category: 'Form', value: 'V1ProvinceListDemo', label: 'V1-省市区/省市' },
+      { category: 'Form', value: 'V1CheckListDemo', label: 'V1-选择列' },
+      { category: 'Form', value: 'FormDemo', label: '表单' },
+      { category: 'Form', value: 'FilesUploadDemo', label: '文件上传' },
+      { category: 'Form', value: 'CalendarDemo', label: '滑动日历' },
+      { category: 'Form', value: 'Textarea', label: '文本输入框' },
+
+      // 业务 Business
+      { category: 'Business', value: 'PointDemo', label: '积分' },
+      { category: 'Business', value: 'PointModalDemo', label: '积分不足弹框' },
+      { category: 'Business', value: 'ContactService', label: '联系客服' },
+      { category: 'Business', value: 'OfficialAccountModalDemo', label: '公众号悬浮提示' },
+      { category: 'Business', value: 'LuckyCanvasDemo', label: '九宫格抽奖' },
+
+      // 其他 Other
+    ],
+  },
+
+  computed: {
+    /* 组件列表分组
+    [{
+      componentList: [{isCustom:true, name:"FormDemo", label:"表单集合", comp: null, category:"docs", label:"文档" }],
+      label:"文档",
+      name:"docs",
+      seq:1,
+    }] */
+    componentListGroup() {
+      const map = this.options.reduce((result, item) => {
+        const category = capitalize(camelize(item.category || DEFAULT_CATEGORY));
+        if (!result[category]) {
+          result[category] = [];
+        }
+        result[category].push(item);
+        return result;
+      }, {});
+
+      const mapLen = Object.keys(map).length;
+      return Object.entries(map).map((item, index) => {
+        const key = item[0];
+        const value = item[1];
+        const categoryItem = categoryMap[key];
+        return { name: key, label: categoryItem?.label || key, seq: categoryItem?.seq || (mapLen + index), componentList: value };
+      }).sort((a, b) => a.seq - b.seq);
+    },
+    componentTitle() {
+      return getItemLabelFromObjectArray(this.options, this.value);
+    },
+  },
+
+  attached() {
+    mpx.getStorage({
+      key: 'demoComponentKey',
+      success: (res) => {
+        this.value = res.data;
+      },
+    });
+  },
+
+  methods: {
+    showDialog() {
+      this.visible = true;
+    },
+
+    updateVisible(value) {
+      this.visible = value;
+    },
+
+    handleChange(evt) {
+      this.value = evt.detail.value;
+      mpx.setStorageSync('demoComponentKey', this.value);
+      this.visible = false;
+    },
+
+    filterChange(searchParams) {
+      console.log(searchParams);
+    },
+
+    // 复制文本
+    copy(e) {
+      const value = e.currentTarget.dataset.value;
+      mpx.setClipboardData({ data: value });
+    },
+  },
+});
+</script>
+
+<style lang="less" scoped>
+.wrapper {
+  padding: 10px;
+  background-color: #FFFFFF;
+}
+
+.no-padding {
+  background-color: #FFFFFF;
+}
+
+.btn-primary {
+  font-size: 14px;
+}
+
+.dialog {
+  &__wrapper {
+    display: flex;
+    overflow-y: scroll;
+    width: 80vw;
+    height: 100vh;
+    background-color: #FFFFFF;
+    flex-direction: column;
+  }
+
+  &__header {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #72767B;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  &__container {
+    padding: 10px 20px;
+    font-size: 12px;
+    flex-grow: 1;
+
+    radio {
+      margin-right: 4px;
+      margin-bottom: 6px;
+    }
+  }
+}
+
+.demo-component {
+  h2 {
+    font-size: 18px;
+  }
+
+  ::v-deep .demo {
+    > h2 {
+      font-size: 18px;
+    }
+
+    > h3 {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    > h4 {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    > p {
+      margin: 4px 0;
+    }
+
+    code {
+      display: inline-block;
+      margin: 0 3.5px;
+      border-radius: 1px;
+      padding: 1px 2.5px;
+      color: #D56161;
+      background: #F0F4F8;
+    }
+  }
+}
+</style>
+
+<script type="application/json">
+{
+  "usingComponents": {
+    "Modal": "../../../common/components/Modal/index.mpx",
+    "IconFontDemo": "../../../common/components/IconFont/Demo.mpx",
+    "V1LoadingToastDemo": "../../../common/components/Other/V1LoadingToast/demo/index.mpx",
+    "V1PopDraggerDemo": "../../../common/components/Other/V1PopDragger/demo/index.mpx",
+    "V1EmptyDemo": "../../../common/components/Data/V1Empty/demo/index.mpx",
+    "V1TabsDemo": "../../../common/components/Data/V1Tabs/demo/index.mpx",
+    "V1TagDemo": "../../../common/components/Data/V1Tag/demo/index.mpx",
+    "DetailItemDemo": "../../../common/components/Detail/DetailItemDemo.mpx",
+    "ScrollViewDemo": "../../../common/components/ScrollView/Demo.mpx",
+    "SingleImageDemo": "../../../common/components/Image/SingleImageDemo.mpx",
+    "ScrollViewImageDemo": "../../../common/components/Image/ScrollViewImageDemo.mpx",
+    "ImageNineCardDemo": "../../../common/components/Image/ImageNineCardDemo.mpx",
+    "DropdownDemo": "../../../common/components/Dropdown/DropdownDemo.mpx",
+    "FileUploadDemo": "../../../common/components/Upload/FilesUploadDemo.mpx",
+    "CalendarDemo": "../../../common/components/Calendar/CalendarDemo.mpx",
+    "PageFilter": "../../../common/components/Filter/PageFilter.mpx",
+    "PageFilterDemo": "../../../common/components/Filter/PageFilterDemo/index.mpx",
+    "ModalDemo": "../../../common/components/Modal/Demo.mpx",
+    "OfficialAccountModalDemo": "../../../common/components/Business/OfficialAccountModal/Demo.mpx",
+    "PointDemo": "../../../common/components/Business/Point/Demo.mpx",
+    "PointModalDemo": "../../../common/components/Business/PointModal/Demo.mpx",
+    "V1FuzzyDemo": "../../../common/components/Form/V1Fuzzy/demo/index.mpx",
+    "V1SliderStepperDemo": "../../../common/components/Form/V1SliderStepper/demo/index.mpx",
+    "V1CascadePickerDemo": "../../../common/components/Form/V1CascadePicker/demo/index.mpx",
+    "V1ProvinceListDemo": "../../../common/components/Form/V1ProvinceList/demo/index.mpx",
+    "V1CheckListDemo": "../../../common/components/Form/V1CheckList/demo/index.mpx",
+    "FormDemo": "../../../common/components/Form/FormDemo.mpx",
+    "ButtonWrapDemo": "../../../common/components/ButtonWrap/ButtonWrapDemo.mpx",
+    "EmptyDemo": "../../../common/components/Empty/Demo.mpx",
+    "ContactService": "../../../common/components/Business/ContactService.mpx",
+    "FilePreviewDemo": "../../../common/components/Upload/FilePreviewDemo.mpx",
+    "CheckboxGroupDemo": "../../../common/components/Select/CheckboxGroupDemo.mpx",
+    "PopupCheckboxGroupDemo": "../../../common/components/Select/PopupCheckboxGroupDemo.mpx",
+    "PopupSecondCheckboxGroupDemo": "../../../common/components/Select/PopupSecondCheckboxGroupDemo.mpx",
+    "PopupRadioDemo": "../../../common/components/Select/PopupRadioDemo.mpx",
+    "PopupTreeCitiesDemo": "../../../common/components/Select/TreeCities/PopupTreeGroupDemo.mpx",
+    "ContainerDemo": "../../../common/components/Container/Demo.mpx",
+    "UChartsDemo": "./components/UCharts.mpx",
+    "ApiDemo": "./components/Api.mpx",
+    "WxDemo": "./components/Wx.mpx",
+    "LuckyCanvasDemo": "../../../common/components/Business/LuckyCanvas/LuckyCanvasDemo.mpx",
+    "FormTextareaDemo": "../../../common/components/Input/Demo/index.mpx"
+  }
+}
+</script>

@@ -1,0 +1,71 @@
+{
+  "_from": "@qiun/ucharts",
+  "_id": "@qiun/ucharts@2.5.0-20230101",
+  "_inBundle": false,
+  "_integrity": "sha512-C7ccBgfPuGF6dxTRuMW0NPPMSCf1k/kh3I9zkRVBc5PaivudX/rPL+jd2Wty6gn5ya5L3Ob+YmYe09V5xw66Cw==",
+  "_location": "/@qiun/ucharts",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "@qiun/ucharts",
+    "name": "@qiun/ucharts",
+    "escapedName": "@qiun%2fucharts",
+    "scope": "@qiun",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "http://47.114.119.218:4873/@qiun%2fucharts/-/ucharts-2.5.0-20230101.tgz",
+  "_shasum": "9ca5d646328ad4a002c745c28001f8916865c4f8",
+  "_spec": "@qiun/ucharts",
+  "_where": "/Users/liuyajun/Work/Project/location-space-mp",
+  "author": {
+    "name": "秋云"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "【原生uCharts】跨平台图表库，全端全平台支持的图表库，开箱即用。支持PC、H5、微信小程序、支付宝小程序、百度小程序、头条小程序、飞书小程序、QQ小程序、360小程序、快手小程序、钉钉小程序、淘宝小程序、京东小程序、Vue、Taro等更多支持canvas的框架，体积小巧、调用简单方便、性能及体验极佳。",
+  "homepage": "https://www.ucharts.cn",
+  "keywords": [
+    "uCharts",
+    "大图",
+    "大屏",
+    "可视化",
+    "图表库",
+    "饼图",
+    "圆环图",
+    "折线图",
+    "柱状图",
+    "山峰图",
+    "区域图",
+    "雷达图",
+    "圆弧进度图",
+    "仪表盘",
+    "K线图",
+    "条状图",
+    "混合图",
+    "玫瑰图",
+    "漏斗图",
+    "词云图",
+    "时序图",
+    "散点图",
+    "气泡图",
+    "地图"
+  ],
+  "license": "Apache",
+  "main": "u-charts.js",
+  "name": "@qiun/ucharts",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "2.5.0-20230101"
+}
