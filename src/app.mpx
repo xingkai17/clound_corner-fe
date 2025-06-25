@@ -1,19 +1,19 @@
 <script>
-import mpx, { createApp } from '@mpxjs/core'
-import apiProxy from '@mpxjs/api-proxy'
-import { createPinia } from 'pinia'
-import Vue from 'vue'
+import mpx, { createApp } from '@mpxjs/core';
+import apiProxy from '@mpxjs/api-proxy';
+import { createPinia } from 'pinia';
+import Vue from 'vue';
 
-mpx.use(apiProxy, { usePromise: true })
+mpx.use(apiProxy, { usePromise: true });
 
-const pinia = createPinia()
-Vue.use(pinia)
+const pinia = createPinia();
+Vue.use(pinia);
 
 createApp({
   onLaunch() {
     //
-  }
-})
+  },
+});
 </script>
 
 <style lang="less">

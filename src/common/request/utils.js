@@ -231,7 +231,7 @@ export function fail(err, config, serviceName) {
  * @param res
  */
 export function success(res, config) {
-  let data = res.data;
+  const data = res.data;
 
   if (config.isMock) {
     return data;

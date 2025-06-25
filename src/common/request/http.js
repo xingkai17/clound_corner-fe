@@ -7,7 +7,7 @@ export function getFullURL(
   baseURL,
   url,
   params,
-  paramsSerializer
+  paramsSerializer,
 ) {
   if (url.startsWith('http')) {
     return buildURL(url, params, paramsSerializer);

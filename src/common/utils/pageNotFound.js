@@ -1,6 +1,7 @@
 /**
  * @Description 页面未找到时的对应处理方法，分包后需要
  */
+import mpx from '@mpxjs/core';
 
 // 路由query对象转字符串参数
 export const queryConvertStringParams = (query) => {
@@ -21,5 +22,5 @@ export const pageNotFoundHandle = (path, query) => {
   //     uni.redirectTo({ url: `/pages/subPagesStore/views/detail/entry${queryConvertStringParams(query)}` });
   //   }
   // 页面404处理（跳转首页）
-  uni.redirectTo({ url: '/views/home/entry' });
+  mpx.redirectTo({ url: '/views/home/entry' });
 };

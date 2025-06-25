@@ -3,6 +3,7 @@
 * 通用性公共方法记得迭代到 @didi/func 方法库
 */
 import { floorKeep, isNotEmpty } from '@didi/func';
+import mpx from '@mpxjs/core';
 // import { BRAND_SIDE } from 'src/views/center/index/config';
 
 /**
@@ -105,7 +106,7 @@ export const getFileTypeIcon = (fileType, isImage = false) => {
  */
 export const getLocation = () => {
   return new Promise((resolve, reject) => {
-    uni.getLocation({
+    mpx.getLocation({
       type: 'gcj02',
       success(res) {
         resolve(res);

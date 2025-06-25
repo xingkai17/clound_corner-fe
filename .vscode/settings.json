@@ -27,7 +27,8 @@
     "less",
     "scss",
     "sass",
-    "vue"
+    "vue",
+    "mpx",
   ],
   "mpx.format.defaultFormatter.html": "prettier",
   "mpx.format.defaultFormatter.css": "prettier",
@@ -61,4 +62,7 @@
         "insertNewLineAroundBlocks": false
     }
   },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

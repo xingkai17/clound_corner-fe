@@ -1,5 +1,6 @@
 <!-- 登录按钮 -->
 <template>
+
   <div class="login">
     <div class="login-title">协议授权</div>
     <checkbox-group class="login-protocol">
@@ -42,22 +43,26 @@ createComponent({
     userInfo: {},
   },
   async attached() {
-      const userStore = useUserStore();
-      this.userInfo = userStore.userInfo;
+    console.log('attached');
 
-        const res = await getStationList({
-          merchantId: this.userInfo.merchantId,
-        });
-        const data = res.data;
+    const userStore = useUserStore();
+    this.userInfo = userStore.userInfo;
 
-        if (isNotEmptyAny(data) && data[0]) {
-            await setBindMerchant({ merchantId: data[0].uid });
+    const res = await getStationList({
+      merchantId: this.userInfo.merchantId,
+    });
+    const data = res.data;
 
-            this.uid = data[0].uid;
+    if (isNotEmptyAny(data) && data[0]) {
+      await setBindMerchant({ merchantId: data[0].uid });
+
+      this.uid = data[0].uid;
+
     }
   },
   methods: {
     toLogin() {
+
       console.log('toLogin');
       if (this.isAuth) {
         mpx.login({
@@ -180,7 +185,6 @@ createComponent({
       font-size: 24rpx;
     }
   }
-
 
   &-content__btn {
     margin: 64rpx 0 0 0;

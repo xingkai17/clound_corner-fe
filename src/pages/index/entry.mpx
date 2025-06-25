@@ -6,12 +6,12 @@
       <text class="api-url">API地址: {{apiUrl}}</text>
       <text class="is-prod">生产环境: {{isProd ? '是' : '否'}}</text>
     </view>
-    <list></list>
+    <list/>
   </view>
 </template>
 
 <script>
-import { createPage } from '@mpxjs/core'
+import { createPage } from '@mpxjs/core';
 
 createPage({
   data: {
@@ -24,9 +24,9 @@ createPage({
       env: process.env.NODE_TYPE,
       apiUrl: process.env.API_URL,
       isProd: process.env.NODE_ENV,
-    })
-  }
-})
+    });
+  },
+});
 </script>
 
 <script type="application/json">

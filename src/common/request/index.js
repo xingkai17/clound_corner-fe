@@ -12,6 +12,6 @@ export function _post(...args) {
 }
 
 
-export function _put(...args){
+export function _put(...args) {
   return catchNoErr(axiosPut(...args));
 }
