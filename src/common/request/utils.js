@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RequestConfig } from '@/../types/interface/config';
+import mpx from '@mpxjs/core';
 // import { getStorage } from '@lhb/cache';
 import { deepCopy, isDef } from '@didi/func';
 import store from '@/store';
@@ -16,7 +16,7 @@ const iv = '9826336351614201';
  * @param iv 偏移量
  * @returns
  */
-function aesDecrypt(encrypted: string, key: string, iv: string) {
+function aesDecrypt(encrypted, key, iv) {
   // 将密文和密钥转换为CryptoJS支持的格式
   const encryptedData = CryptoJS.enc.Hex.parse(encrypted);
   const decryptedKey = CryptoJS.enc.Utf8.parse(key);
@@ -42,7 +42,7 @@ function aesDecrypt(encrypted: string, key: string, iv: string) {
  * @param iv 偏移量
  * @returns
  */
-// function aesEncrypt(data: any, key: string, iv: string) {
+// function aesEncrypt(data, key, iv) {
 //   // 将数据、密钥和向量转换为CryptoJS支持的格式
 //   const dataToEncrypt = CryptoJS.enc.Utf8.parse(data);
 //   const encryptedKey = CryptoJS.enc.Utf8.parse(key);
@@ -60,7 +60,6 @@ function aesDecrypt(encrypted: string, key: string, iv: string) {
 // }
 
 
-// @ts-ignore
 // import { Message, MessageBox } from 'element-ui';
 
 // MockUrl
@@ -73,7 +72,7 @@ const baseApi = process.env.BASE_API;
 /**
  * 请求基础配置
  */
-const baseConfig: any = {
+const baseConfig = {
   needCancel: true, // 是否需要在下次请求发生时，对之前的请求进行 abortControl
   isMock: false, // 是否mock方式
   mockId: 560, // 其他后台mock的id
@@ -90,9 +89,8 @@ const baseConfig: any = {
  * 异常处理
  */
 class ApiError extends Error {
-  code: string;
-  constructor(err: { message?: string; msg?: string; code: string }) {
-    const msg: string = err.message || err.msg || '';
+  constructor(err) {
+    const msg = err.message || err.msg || '';
     super(msg);
     Object.assign(this, err);
     this.code = err.code;
@@ -104,11 +102,11 @@ class ApiError extends Error {
  * @param version 版本号
  * @param isPost 是否是 Post 请求
  */
-export function getHeader(version = 1): any {
+export function getHeader(version = 1) {
   // 约定所有项目，为避免信息污染其他项目，存放cookie内的信息，一律加前缀
   const token = getStorage('token') ? getStorage('token_type') + ' ' + getStorage('token') : '';
 
-  const obj: any = {
+  const obj = {
     Authorization: token,
     clientKey: 1001213, // location-space-mp，使用location的clientKey
     // clientKey: clientKeyMap[source] || clientKeyMap.default, // PMS
@@ -121,7 +119,7 @@ export function getHeader(version = 1): any {
  * 合并请求
  * @param extraConfig
  */
-export function mergeConfig(extraConfig: any): RequestConfig {
+export function mergeConfig(extraConfig) {
   const _baseConfig = deepCopy(baseConfig);
   // 为了方便 第三个参数为boolean 值时可控制needHint值
   if (typeof extraConfig === 'boolean') {
@@ -137,7 +135,7 @@ export function mergeConfig(extraConfig: any): RequestConfig {
 /**
  * 返回配置后的请求URl
  */
-export function getRequestUrl(serviceName: string, config: RequestConfig): string {
+export function getRequestUrl(serviceName, config) {
   return (process.env.NODE_ENV === 'development' && isMockDebugMode && config.isMock ? `${mockUrl}${config.mockId || baseConfig.mockId}` : `${config.proxyApi || defaultProxyApi}`) + baseUrl + serviceName;
 }
 
@@ -146,7 +144,7 @@ export function getRequestUrl(serviceName: string, config: RequestConfig): strin
  * @param err
  * @param config
  */
-export function fail(err: any, config: RequestConfig, serviceName: string): null {
+export function fail(err, config, serviceName) {
   // console.log('fail err', err);
   if (axios.isCancel(err)) {
     throw new ApiError({
@@ -154,9 +152,8 @@ export function fail(err: any, config: RequestConfig, serviceName: string): null
       msg: `您取消了请求 ${serviceName}`,
     });
   }
-  // @ts-ignore
   const { errorConfig: { needHint, duration = 300000, showClose = false }, codeArray = [] } = config;
-  const errorOptions: any = {
+  const errorOptions = {
     icon: 'error',
     duration,
     showClose,
@@ -205,12 +202,12 @@ export function fail(err: any, config: RequestConfig, serviceName: string): null
         // token无效，建议踢出
         // dispatchLogout(true);
         store.commit('logout');
-        uni.$emit('Login');
+        mpx.$emit('Login');
         showToast(errorOptions.title, 2000);
         // uni.showToast(errorOptions);
       } else {
         if (curStatus === 403 || curStatus === 500) {
-          uni.showToast({
+          mpx.showToast({
             ...errorOptions,
             ...config.failShowToastConfig,
           });
@@ -229,7 +226,7 @@ export function fail(err: any, config: RequestConfig, serviceName: string): null
  * remark: 暂时未做处理，预留
  * @param res
  */
-export function success(res: any, config: any) {
+export function success(res, config) {
   let data = res.data;
   // console.log(config);
   if (typeof data === 'string') {
@@ -256,7 +253,7 @@ export function success(res: any, config: any) {
  * @param requestConfig
  * @param axiosConfig
  */
-export function getAxiosConfig(requestConfig: RequestConfig, axiosConfig: any = {}) {
+export function getAxiosConfig(requestConfig, axiosConfig = {}) {
   const { needCancel = true, responseType } = requestConfig;
   // 需要cancel的时候，就加入cancelToken
   if (needCancel) {

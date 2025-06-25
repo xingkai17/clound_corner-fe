@@ -1,4 +1,5 @@
 import axios from 'axios';
+import mpx from '@mpxjs/core';
 import { getFullURL } from './http';
 import { APP_CONFIG } from '@/common/utils/config';
 // import router from '@/router';
@@ -17,24 +18,24 @@ axios.defaults.timeout = 30000; // 设置30s为超时
 // #ifdef MP_WEIXIN
 // 真机获取 解决app上adapter is not a function问题
 // 解决 uniapp 适配axios请求，避免报adapter is not a function错误
-axios.defaults.adapter = function(config: any) {
+axios.defaults.adapter = function(config) {
   const { url, method, data, params, headers, baseURL, paramsSerializer } = config;
   return new Promise((resolve, reject) => {
-    uni.request({
-      method: method!.toUpperCase() as any,
-      url: getFullURL(process.env.API_URL || baseURL || '', url!, params, paramsSerializer),
+    mpx.request({
+      method: method.toUpperCase(),
+      url: getFullURL(process.env.API_URL || baseURL || '', url, params, paramsSerializer),
       header: headers,
       data,
       dataType: 'json',
       responseType: config.responseType,
-      success: (res: any) => {
+      success: (res) => {
         if (res.statusCode === 200) {
           resolve(res);
         } else {
           reject({ response: res });
         }
       },
-      fail: (err: any) => {
+      fail: (err) => {
         console.log('fail', err);
         reject(err);
       },
@@ -51,7 +52,7 @@ const instance = axios.create();
  * 请求拦截
  */
 instance.interceptors.request.use(
-  (config: any) => {
+  (config) => {
     // get 请求时，清空参数前后空格
     if (config.method.toUpperCase() === 'GET') {
       config.params = deepTrim(config.params);
@@ -75,7 +76,7 @@ instance.interceptors.request.use(
  * 结果拦截
  */
 instance.interceptors.response.use(
-  (response: any) => {
+  (response) => {
     const { config } = response;
     config && config.axiosKey && requestMap.delete(config.axiosKey);
     return response;
@@ -89,7 +90,7 @@ instance.interceptors.response.use(
 //   // 遍历全部取消
 //   // console.log('待取消请求的数目：', requestMap.size);
 //   if (requestMap.size > 0) {
-//     requestMap.forEach((item: any, key: any) => {
+//     requestMap.forEach((item, key) => {
 //       item.cancel();
 //       requestMap.delete(key);
 //     });

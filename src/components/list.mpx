@@ -19,7 +19,7 @@ createComponent({
 
   .list {
     background-color: red;
-    .bb-1px(1px, #000);
+    .bb-1px(#000);
   }
 </style>
 

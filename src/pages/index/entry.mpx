@@ -32,7 +32,7 @@ createPage({
 <script type="application/json">
   {
     "usingComponents": {
-      "list": "../components/list"
+      "list": "../../components/list"
     }
   }
 </script>

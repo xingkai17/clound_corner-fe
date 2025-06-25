@@ -4,10 +4,10 @@ import buildURL from 'axios/lib/helpers/buildURL';
 // type ParamsSerializer = AxiosRequestConfig['paramsSerializer']
 
 export function getFullURL(
-  baseURL: string,
-  url: string,
-  params: Record<string, any>,
-  paramsSerializer?: any,
+  baseURL,
+  url,
+  params,
+  paramsSerializer
 ) {
   if (url.startsWith('http')) {
     return buildURL(url, params, paramsSerializer);

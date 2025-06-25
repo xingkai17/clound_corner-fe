@@ -20,7 +20,8 @@ createApp({
 <script type="application/json">
   {
     "pages": [
-      "./pages/index"
+      "./pages/login/entry",
+      "./pages/index/entry"
     ]
   }
 </script>
