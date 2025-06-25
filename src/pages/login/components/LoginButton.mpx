@@ -5,14 +5,14 @@
     <div class="login-title">协议授权</div>
     <checkbox-group class="login-protocol">
       <IconFont
-        :color="!isAuth ? '#C2C2C7' : '#FF6600'"
-        :icon-href="isAuth ? 'icon-market-check_active' : 'icon-market-check'"
+        color="{{!isAuth ? '#C2C2C7' : '#FF6600'}}"
+        icon-href="{{isAuth ? 'icon-market-check_active' : 'icon-market-check'}}"
         bind:handleClick="changeAuth"
       />
 
       <div class="desc">
         <div class="desc-title">已阅读并同意以下协议</div>
-        <navigator class="login-protocol__a" bindclick="openPrivacyContract">《小程序隐私保护指引》</navigator>
+        <navigator class="login-protocol__a" bindtap="openPrivacyContract">《小程序隐私保护指引》</navigator>
         <navigator url="/pages/subPagesDoc/agreement/privacy/entry" class="login-protocol__a">《小程序隐私政策》</navigator>
         <navigator url="/pages/subPagesDoc/agreement/user/entry" class="login-protocol__a">《个人信息共享授权书》</navigator>
       </div>
@@ -165,7 +165,6 @@ createComponent({
 .login {
   position: absolute;
   background-color: #fff;
-  padding: 40rpx 40rpx;
   border-radius: 32rpx;
   width: 686rpx;
   left: 32rpx;
