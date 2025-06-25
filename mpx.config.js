@@ -1,6 +1,4 @@
 const { defineConfig } = require('@vue/cli-service')
-const path = require('path')
-
 module.exports = defineConfig({
   outputDir: `dist/${process.env.MPX_CURRENT_TARGET_MODE}`,
   css: {
@@ -9,13 +7,6 @@ module.exports = defineConfig({
         javascriptEnabled: true,
       },
     },
-  },
-  configureWebpack: {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, 'src')
-      }
-    }
   },
   pluginOptions: {
     mpx: {
@@ -33,5 +24,10 @@ module.exports = defineConfig({
       loader: {},
       unocss: {}
     }
-  }
+  },
+  /**
+   * 如果希望node_modules下的文件时对应的缓存可以失效，
+   * 可以将configureWebpack.snap.managedPaths修改为 []
+   */
+  configureWebpack(config) {}
 })
