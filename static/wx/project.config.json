@@ -2,11 +2,20 @@
   "setting": {
     "newFeature": true,
     "urlCheck": false,
-    "es6": false,
+    "es6": true,
     "postcss": true,
-    "minified": false,
+    "minified": true,
     "checkSiteMap": false,
-    "autoAudits": false
+    "bigPackageSizeSupport": true,
+    "ignoreUploadUnusedFiles": true,
+    "autoAudits": false,
+    "compileHotReLoad": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "uglifyFileName": false
   },
   "appid": "wx21c2e8ca1f7fe33d",
   "projectname": "mpx-project",

@@ -40,10 +40,6 @@ export const useUserStore = defineStore('user', {
       this.userInfo = {};
       mpx.setStorageSync('token', '');
       setStorage('refreshIm', true);
-      mpx.removeTabBarBadge({
-        index: 1,
-        fail() {},
-      });
     },
     setOpenid(openid) {
       this.openid = openid;

@@ -12,7 +12,7 @@
 
       <div class="desc">
         <div class="desc-title">已阅读并同意以下协议</div>
-        <navigator class="login-protocol__a" bind:click="openPrivacyContract">《小程序隐私保护指引》</navigator>
+        <navigator class="login-protocol__a" bindclick="openPrivacyContract">《小程序隐私保护指引》</navigator>
         <navigator url="/pages/subPagesDoc/agreement/privacy/entry" class="login-protocol__a">《小程序隐私政策》</navigator>
         <navigator url="/pages/subPagesDoc/agreement/user/entry" class="login-protocol__a">《个人信息共享授权书》</navigator>
       </div>
@@ -20,9 +20,9 @@
 
     <button
       class="login-content__btn"
-      :open-type="opentype"
-      bind:click="toLogin()"
-      bind:getphonenumber="getPhoneNumber"
+      open-type="{{opentype}}"
+      bindtap="toLogin"
+      bindgetphonenumber="getPhoneNumber"
     >一键登录</button>
   </div>
 </template>
@@ -36,9 +36,9 @@ import { isNotEmptyAny } from '@didi/func';
 
 createComponent({
   data: {
-    isAuth: false,
+    isAuth: true,
     code: '',
-    opentype: '',
+    opentype: 'getPhoneNumber',
     uid: '',
     userInfo: {},
   },
@@ -62,7 +62,7 @@ createComponent({
   },
   methods: {
     toLogin() {
-      console.log('toLogin');
+      console.log('toLogin', this.isAuth);
 
       if (this.isAuth) {
         mpx.login({
@@ -92,6 +92,7 @@ createComponent({
       }
     },
     getPhoneNumber(e) {
+      console.log('getPhoneNumber', e);
       const { iv, encryptedData, code, errMsg } = e.detail;
       if (errMsg === 'getPhoneNumber:ok') {
         const params = {
@@ -114,12 +115,12 @@ createComponent({
               // await postMemberRegisterForStation(params2);
               mpx.hideLoading();
               mpx.showToast({ title: '登录成功' });
-              mpx.navigateBack({
-                delta: 1,
-                success: () => {
-                  mpx.$emit('dispatchLogin', userStore.getUserInfo);
-                },
-              });
+              // mpx.navigateBack({
+              //   delta: 1,
+              //   success: () => {
+              //     mpx.$emit('dispatchLogin', userStore.getUserInfo);
+              //   },
+              // });
             } catch (updateError) {
               console.warn('更新用户信息失败:', updateError);
               mpx.hideLoading();
