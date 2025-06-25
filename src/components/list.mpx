@@ -15,8 +15,11 @@ createComponent({
 </script>
 
 <style lang="less">
+  @import '@/common/styles/index.less';
+
   .list {
     background-color: red;
+    .bb-1px(1px, #000);
   }
 </style>
 
