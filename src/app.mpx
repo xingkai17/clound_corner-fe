@@ -11,9 +11,7 @@ createApp({
 })
 </script>
 
-<style lang="less">
-  @import './common/styles/common.less';
-
+<style>
   /*此处编写全局样式*/
 </style>
 
