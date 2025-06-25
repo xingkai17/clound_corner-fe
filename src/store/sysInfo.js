@@ -2,6 +2,7 @@
  * @Description 系统信息
  */
 import { defineStore } from 'pinia';
+import mpx from '@mpxjs/core';
 import { setStorage } from '@/common/utils/cache';
 
 export const useSysInfoStore = defineStore('sysInfo', {
@@ -36,7 +37,7 @@ export const useSysInfoStore = defineStore('sysInfo', {
     },
     setSysInfo() {
       try {
-        const res = wx.getSystemInfoSync();
+        const res = mpx.getSystemInfoSync();
         const { model, safeArea, statusBarHeight, screenHeight } = res;
         let titleBarHeight = 44;
         if (model.indexOf('iPhone') !== -1) {

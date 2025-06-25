@@ -8,9 +8,9 @@ console.log('IS_PROD', IS_PROD);
 
 // IM 接口
 const apiUrlObj = {
-  default: 'https://ie-zhizu.lanhanba.net', // 默认
-  ip: 'https://ie-zhizu.lanhanba.net', // 本地
-  ie: 'https://ie-zhizu.lanhanba.net', // 集成
+  default: 'https://didi.paysys.cn', // 默认
+  ip: 'https://didi.paysys.cn', // 本地
+  ie: 'https://didi.paysys.cn', // 集成
   te: 'https://didi.paysys.cn', //  测试
   se: 'https://didi.joilpay.com', // 预演
   pe: 'https://didi.joilpay.com', // 生产
