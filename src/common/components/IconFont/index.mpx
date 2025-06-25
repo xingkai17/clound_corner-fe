@@ -5,22 +5,20 @@ import IconFont from 'src/common/components/IconFont/index.vue';
 
 <IconFont icon-href="locxx-wap-ic_shoucang"/>
 -->
-<!-- eslint-disable vue/no-multiple-template-root -->
 <template>
   <block>
     <!-- #ifdef MP_WEIXIN -->
     <i
-      class="iconfont icon"
-      :style="{ 'font-size': size,'width': width,'height': height, color: color, padding: padding }"
-      :class="[iconHref, customClass]"
-      bind:click="handleClick"
+      class="iconfont icon {{iconHref}} {{customClass}}"
+      style="font-size: {{size}}; width: {{width}}; height: {{height}}; color: {{color}}; padding: {{padding}};"
+      bindtap="handleClick"
     ></i>
     <!-- #endif -->
     <!-- #ifndef MP_WEIXIN -->
-    <svg aria-hidden :style="{ 'font-size': size,'width': width,'height': height }" class="icon" bind:click="handleClick">
-      <use :xlink:href="`#${iconHref}`"/>
+    <svg aria-hidden style="font-size: {{size}}; width: {{width}}; height: {{height}};" class="icon" bindtap="handleClick">
+      <use xlink:href="#{{iconHref}}"/>
     </svg>
-  <!-- #endif -->
+    <!-- #endif -->
   </block>
 </template>
 
@@ -28,63 +26,51 @@ import IconFont from 'src/common/components/IconFont/index.vue';
 import { createComponent } from '@mpxjs/core';
 
 createComponent({
-  options: {
-    styleIsolation: 'shared',
-  },
-  props: {
+  properties: {
     iconHref: {
       type: String,
-      default: null,
+      value: null,
     },
     color: {
       type: String,
-      default: '',
+      value: '',
     },
     size: {
       type: String,
-      default: '32rpx',
+      value: '32rpx',
     },
     width: {
       type: String,
-      default: '1em',
+      value: '1em',
     },
     height: {
       type: String,
-      default: '1em',
+      value: '1em',
     },
     padding: {
       type: String,
-      default: '0rpx',
+      value: '0rpx',
     },
     // 自定义样式，如 custom-style="height: 300px;"
     customStyle: {
       type: Object,
-      default: () => {},
+      value: {},
     },
-    /** 自定义样式类名，如 custom-class="wrapper"
-     * 注意，传入的类名可能需要这样才能生效：
-        script 部分：
-          options: {
-            styleIsolation: 'shared',
-          },
-
-        style 部分：
-        ::v-deep .wrapper {}
-     */
+    /** 自定义样式类名，如 custom-class="wrapper" */
     customClass: {
       type: String,
-      default: '',
+      value: '',
     },
   },
   methods: {
     handleClick() {
-      this.$emit('handleClick');
+      this.triggerEvent('handleClick');
     },
   },
 });
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 @import "./iconfont.css";
 
 .icon {
@@ -99,7 +85,6 @@ createComponent({
 
   /* #ifndef MP_WEIXIN */
   overflow: hidden;
-
   /* #endif */
 
   /* 通过设置 font-size 来改变图标大小 */
@@ -113,5 +98,4 @@ createComponent({
   /* 通过设置 color 来改变 SVG 的颜色/fill */
   fill: currentcolor;
 }
-
 </style>
