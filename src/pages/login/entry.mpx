@@ -12,21 +12,18 @@
 
 <script>
 import { createPage } from '@mpxjs/core';
-import sysInfoStore from '@/store/sysInfo';
-import LoginButton from './components/LoginButton.mpx';
+import { useSysInfoStore } from '@/store/sysInfo';
 import Omega from '@didi/tracker-mpapp';
 
 createPage({
-  components: {
-    LoginButton,
-  },
   data: {
     imgUrl: process.env.IMG_URL,
     barHeight: '',
   },
   onLoad() {
     // 获取状态栏高度
-    this.barHeight = `padding-top: ${sysInfoStore.getters.getStatusBarHeight + sysInfoStore.getters.getTitleBarHeight}px`;
+    const sysInfoStore = useSysInfoStore();
+    this.barHeight = `padding-top: ${sysInfoStore.getStatusBarHeight + sysInfoStore.getTitleBarHeight}px`;
 
     Omega.trackEvent('gas_xjsaas_login_sw', {
       pub_saas_time_stamp: Date.now(),
@@ -38,7 +35,17 @@ createPage({
 });
 </script>
 
+<script type="application/json">
+  {
+    "navigationBarTitleText": "登录",
+    "usingComponents": {
+      "LoginButton": "./components/LoginButton.mpx"
+    }
+  }
+</script>
+
 <style lang="less" scoped>
+@import '@/common/styles/index.less';
 .content {
   position: relative;
   height: 100%;
@@ -72,8 +79,3 @@ createPage({
 
 </style>
 
-<script type="application/json">
-{
-  "navigationBarTitleText": "登录"
-}
-</script>

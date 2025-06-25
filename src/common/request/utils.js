@@ -2,38 +2,9 @@ import axios from 'axios';
 import mpx from '@mpxjs/core';
 // import { getStorage } from '@lhb/cache';
 import { deepCopy, isDef } from '@didi/func';
-import store from '@/store';
-import CryptoJS from 'crypto-js';
+import { useUserStore } from '@/store/user';
 import { showToast } from '../utils/toast';
 import { getStorage } from '@/common/utils/cache';
-const key = 'QQUBsuqU7quVTzbkvmq3sJwRChiRIUg5';
-const iv = '9826336351614201';
-
-/**
- * 接口请求解密
- * @param encrypted 密文
- * @param key 公钥
- * @param iv 偏移量
- * @returns
- */
-function aesDecrypt(encrypted, key, iv) {
-  // 将密文和密钥转换为CryptoJS支持的格式
-  const encryptedData = CryptoJS.enc.Hex.parse(encrypted);
-  const decryptedKey = CryptoJS.enc.Utf8.parse(key);
-  const decryptedIV = CryptoJS.enc.Utf8.parse(iv);
-
-  // 执行解密操作
-  const decrypted = CryptoJS.AES.decrypt(
-    { ciphertext: encryptedData },
-    decryptedKey,
-    { iv: decryptedIV },
-  );
-
-  // 获取解密结果
-  const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
-
-  return JSON.parse(decryptedText);
-}
 
 /**
  * 接口请求加密
@@ -201,7 +172,7 @@ export function fail(err, config, serviceName) {
       if (curStatus === 401) {
         // token无效，建议踢出
         // dispatchLogout(true);
-        store.commit('logout');
+        useUserStore().logout();
         mpx.$emit('Login');
         showToast(errorOptions.title, 2000);
         // uni.showToast(errorOptions);
@@ -228,12 +199,6 @@ export function fail(err, config, serviceName) {
  */
 export function success(res, config) {
   let data = res.data;
-  // console.log(config);
-  if (typeof data === 'string') {
-    data = aesDecrypt(data, key, iv);
-    // console.info(`request = `, data);
-  }
-
 
   if (config.isMock) {
     return data;

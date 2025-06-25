@@ -1,0 +1,42 @@
+<!-- name: 图标 -->
+<!-- category: basic -->
+<template>
+  <view class="demo">
+
+    <h2>图标</h2>
+    <h3>基础用法</h3>
+    <a href="https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.11&manage_type=myprojects&projectId=3994162&keyword=&project_type=&page=" target="_blank" class="db color-primary mb-10">图标链接</a>
+    <view class="wrapper">
+      <IconFont icon-href="icon-market-check"/>
+      <IconFont icon-href="icon-market-check_active"/>
+      <IconFont icon-href="icon-market-a-lujing41"/>
+      <IconFont icon-href="icon-market-daishiyong"/>
+      <IconFont icon-href="icon-market-yishiyong"/>
+      <IconFont icon-href="icon-market-yidaozhang"/>
+      <IconFont icon-href="icon-market-fanhui"/>
+      <IconFont icon-href="icon-market-close"/>
+      <IconFont icon-href="icon-market-yiwen1"/>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core';
+import IconFont from 'src/common/components/IconFont/index.vue';
+
+createComponent({
+  components: {
+    IconFont,
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.wrapper {
+  flex-wrap: wrap;
+  display: flex;
+  gap: 4px;
+  font-size: 24px;
+}
+</style>

@@ -1,0 +1,60 @@
+/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+@font-face {
+  font-family: iconfont;  /* Project id 4854448 */
+  src:
+    url("//at.alicdn.com/t/c/font_4854448_x7zfuljv7g.woff2?t=1744102035654") format("woff2"),
+    url("//at.alicdn.com/t/c/font_4854448_x7zfuljv7g.woff?t=1744102035654") format("woff"),
+    url("//at.alicdn.com/t/c/font_4854448_x7zfuljv7g.ttf?t=1744102035654") format("truetype");
+}
+
+.iconfont {
+  font-family: iconfont !important;
+  font-size: 32rpx;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-market-right-arrow::before {
+  content: "\eb13";
+}
+
+.icon-market-yiguoqi::before {
+  content: "\e617";
+}
+
+.icon-market-check_active::before {
+  content: "\e612";
+}
+
+.icon-market-check::before {
+  content: "\e613";
+}
+
+.icon-market-a-lujing41::before {
+  content: "\e6e9";
+}
+
+.icon-market-daishiyong::before {
+  content: "\e615";
+}
+
+.icon-market-yishiyong::before {
+  content: "\e616";
+}
+
+.icon-market-yidaozhang::before {
+  content: "\e614";
+}
+
+.icon-market-fanhui::before {
+  content: "\e611";
+}
+
+.icon-market-close::before {
+  content: "\e6cb";
+}
+
+.icon-market-yiwen1::before {
+  content: "\e6e7";
+}

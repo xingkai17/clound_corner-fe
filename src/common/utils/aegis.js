@@ -34,19 +34,19 @@ const getAegisConfig = () => {
 const aegis = new Aegis(getAegisConfig());
 
 // 扩展方法
-export const setUserInfo = (uid: string) => {
+export const setUserInfo = (uid) => {
   aegis.setConfig({
     uid,
   });
 };
 
 // 自定义上报方法
-export const reportCustomError = (error: Error, extra?: Record<string, any>) => {
+export const reportCustomError = (error, extra) => {
   aegis.error(error, extra);
 };
 
 // 修改 reportEvent 方法，使用 ext1 替代 ext
-export const reportCustomEvent = (name: string, ext1: string, ext2: string, ext3: string) => {
+export const reportCustomEvent = (name, ext1, ext2, ext3) => {
   aegis.reportEvent({
     name,
     ext1,
@@ -54,18 +54,18 @@ export const reportCustomEvent = (name: string, ext1: string, ext2: string, ext3
     ext3,
   });
 };
-export const infoAll = (name: string, ext1: string) => {
+export const infoAll = (name, ext1) => {
   aegis.infoAll(name, ext1, `appId=${process.env.APPID}`, `token=${getStorage('token')}`, new Date());
 };
 
 // 修改 reportTime 方法，移除第三个参数
-export const reportTiming = (name: string, duration: number) => {
+export const reportTiming = (name, duration) => {
   aegis.reportTime(name, duration);
 };
-export const reportTime = (name: string) => {
+export const reportTime = (name) => {
   aegis.time(name);
 };
-export const reportTimeEnd = (name: string) => {
+export const reportTimeEnd = (name) => {
   aegis.timeEnd(name);
 };
 
