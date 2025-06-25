@@ -4,7 +4,6 @@ import mpx from '@mpxjs/core';
 // 小程序消息订阅模板id
 export const templateId = process.env.NODE_ENV === 'production' && ['pe', 'se'].includes(process.env.NODE_TYPE) ? 'QK7_-ZGJAN9tRRQ-oACpO2QeSyDLaUuPQWvS_qBYqTw' : '3Y_FHhk_gk95CJ6R6KwMnybjMpE1SQ14SJhdw5a6Njg';
 
-
 // 获取是否需要小程序消息订阅
 export const getIsNeedToSubscribe = async() => {
   const res = await _post('/api/common/user/subscribeMessage/isNeedToSubscribe', {}, true);

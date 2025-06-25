@@ -54,7 +54,6 @@ export const useSysInfoStore = defineStore('sysInfo', {
           bottomSaveAreaHeight,
         });
 
-
       } catch (err) {
         console.log(err);
       }

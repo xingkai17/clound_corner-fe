@@ -99,7 +99,6 @@ export const getFileTypeIcon = (fileType, isImage = false) => {
   return isImage ? `https://staticres.linhuiba.com/project-custom/location-space-mp/icon/${val}.png` : `locxx-wap-${val}`;
 };
 
-
 /**
  * @description 获取当前定位
  * @return
@@ -117,7 +116,6 @@ export const getLocation = () => {
     });
   });
 };
-
 
 // 圆圈半径对应的scale(ios includePoints方法无效)
 const scaleMap = {

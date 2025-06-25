@@ -62,8 +62,8 @@ createComponent({
   },
   methods: {
     toLogin() {
-
       console.log('toLogin');
+
       if (this.isAuth) {
         mpx.login({
           success: (res) => {

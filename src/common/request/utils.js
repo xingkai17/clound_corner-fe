@@ -30,7 +30,6 @@ import { getStorage } from '@/common/utils/cache';
 //   return encryptedData;
 // }
 
-
 // import { Message, MessageBox } from 'element-ui';
 
 // MockUrl

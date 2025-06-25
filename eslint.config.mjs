@@ -1,5 +1,4 @@
 import eslintPluginMpx from 'eslint-plugin-mpx';
-import eslintPluginVue from 'eslint-plugin-vue';
 import mpxEslintParser from 'mpx-eslint-parser';
 
 export default [
@@ -19,7 +18,6 @@ export default [
     },
     plugins: {
       mpx: eslintPluginMpx,
-      vue: eslintPluginVue,
     },
     rules: {
       ...eslintPluginMpx.configs['mpx-essential'].rules,
@@ -56,37 +54,6 @@ export default [
       'curly': [2, 'multi-line'],
       'no-unused-vars': [2, { 'vars': 'all', 'args': 'none' }],
       'prefer-const': 2,
-
-      // Vue 规则
-      'vue/html-closing-bracket-newline': [2],
-      'vue/html-closing-bracket-spacing': ['error', {
-        'startTag': 'never',
-        'endTag': 'never',
-        'selfClosingTag': 'never',
-      }],
-      'vue/html-self-closing': ['error', {
-        'html': { 'void': 'never', 'normal': 'any', 'component': 'always' },
-        'svg': 'always',
-        'math': 'always',
-      }],
-      'vue/max-attributes-per-line': [2, {
-        'singleline': { 'max': 5 },
-        'multiline': { 'max': 1 },
-      }],
-      'vue/no-parsing-error': [2, { 'invalid-first-character-of-tag-name': false }],
-      'vue/no-side-effects-in-computed-properties': 2,
-      'vue/no-v-html': 0,
-      'vue/object-curly-spacing': [2, 'always', { objectsInObjects: true }],
-      'vue/singleline-html-element-content-newline': 'off',
-      'vue/multiline-html-element-content-newline': 'off',
-      'vue/space-infix-ops': 2,
-      'vue/component-options-name-casing': ['error', 'PascalCase'],
-      'vue/multi-word-component-names': 'off',
-      'vue/v-slot-style': 'off',
-      'vue/no-mutating-props': 'off',
-      'vue/no-lone-template': 'error',
-      'vue/no-unused-vars': 'off',
-      'vue/no-template-shadow': 2,
     },
   },
   {

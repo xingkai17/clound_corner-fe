@@ -42,7 +42,6 @@ export const setBindMerchant = (params) => {
   return _post('/api1/member/bindMerchant', params, { proxyApi: baseApi, needHint: false });
 };
 
-
 /**
  * @description 会员卡单独售卖油站会员注册接口
  * @link https://didi.paysys.cn/webapi/doc.html#/ALL/%E4%BC%9A%E5%91%98%E5%8D%A1%E5%8D%95%E7%8B%AC%E5%94%AE%E5%8D%96-saas%E6%A1%94%E9%87%8F/memberRegisterForStationUsingPOST
