@@ -27,7 +27,8 @@
 </template>
 
 <script>
-import { createComponent } from '@mpxjs/core';
+import mpx, { createComponent } from '@mpxjs/core';
+
 import { getPhoneNumber, getStationList, setBindMerchant } from '@/common/api/login';
 import { useUserStore } from '@/store/user';
 import { isNotEmptyAny } from '@didi/func';
@@ -41,24 +42,25 @@ createComponent({
     userInfo: {},
   },
   async attached() {
-    const userStore = useUserStore();
-    this.userInfo = userStore.userInfo;
+      const userStore = useUserStore();
+      this.userInfo = userStore.userInfo;
 
-    const res = await getStationList({
-      merchantId: this.userInfo.merchantId,
-    });
-    const data = res.data;
+        const res = await getStationList({
+          merchantId: this.userInfo.merchantId,
+        });
+        const data = res.data;
 
-    if (isNotEmptyAny(data) && data[0]) {
-      await setBindMerchant({ merchantId: data[0].uid });
+        if (isNotEmptyAny(data) && data[0]) {
+            await setBindMerchant({ merchantId: data[0].uid });
 
-      this.uid = data[0].uid;
+            this.uid = data[0].uid;
     }
   },
   methods: {
     toLogin() {
+      console.log('toLogin');
       if (this.isAuth) {
-        wx.login({
+        mpx.login({
           success: (res) => {
           // code 用户登录凭证（有效期五分钟）。开发者需要在开发者服务器后台调用 code2Session，使用 code 换取 openid、unionid、session_key 等信息
             if (res.code) {
@@ -70,7 +72,7 @@ createComponent({
           },
         });
       } else {
-        wx.showToast({
+        mpx.showToast({
           title: '请勾选协议',
           icon: 'none',
         });
@@ -91,45 +93,54 @@ createComponent({
           authCode: code,
           iv,
           encryptedData,
-          'appId': process.env.APPID,
-          'grant_type': process.env.GRANT_TYPE,
-
+          'appId': process.env.APPID || 'wx21c2e8ca1f7fe33d',
+          'grant_type': process.env.GRANT_TYPE || '1',
         };
-        wx.showLoading({ title: '加载中' });
+        mpx.showLoading({ title: '加载中' });
         try {
           getPhoneNumber(params).then(async(res) => {
-            const userStore = useUserStore();
-            userStore.updateUserInfo({
-              ...this.userInfo,
-              ...res.data,
-            });
-            console.log('res.mobilePhone = ', res);
-            // await postMemberRegisterForStation(params2);
-            wx.hideLoading();
-            wx.showToast({ title: '登录成功' });
-            wx.navigateBack({
-              delta: 1,
-              success: () => {
-                wx.$emit('dispatchLogin', userStore.getUserInfo);
-              },
-            });
+            try {
+              const userStore = useUserStore();
+              userStore.updateUserInfo({
+                ...this.userInfo,
+                ...res.data,
+              });
+              console.log('res.mobilePhone = ', res);
+              // await postMemberRegisterForStation(params2);
+              mpx.hideLoading();
+              mpx.showToast({ title: '登录成功' });
+              mpx.navigateBack({
+                delta: 1,
+                success: () => {
+                  mpx.$emit('dispatchLogin', userStore.getUserInfo);
+                },
+              });
+            } catch (updateError) {
+              console.warn('更新用户信息失败:', updateError);
+              mpx.hideLoading();
+              mpx.showToast({ title: '登录成功，但更新信息失败', icon: 'none' });
+            }
           }, (err) => {
-            wx.hideLoading();
-            console.log('err', err);
+            mpx.hideLoading();
+            console.log('获取手机号失败:', err);
+            mpx.showToast({ title: '获取手机号失败', icon: 'none' });
           });
         } catch (error) {
-          wx.hideLoading();
-          console.log('error', error);
+          mpx.hideLoading();
+          console.log('请求异常:', error);
+          mpx.showToast({ title: '网络请求失败', icon: 'none' });
         }
+      } else {
+        console.log('用户拒绝授权获取手机号:', errMsg);
+        mpx.showToast({ title: '需要授权获取手机号', icon: 'none' });
       }
-
     },
 
     openPrivacyContract(e) {
-      wx.openPrivacyContract({
+      mpx.openPrivacyContract({
         success: () => {}, // 打开成功
         fail: () => {
-          wx.showToast({
+          mpx.showToast({
             title: '打开协议失败',
             icon: 'error',
           });

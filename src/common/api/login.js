@@ -1,11 +1,8 @@
 /**
- * @Description
- */
-/**
  * @Description 登录
  */
 import { _get, _post } from '../request';
-const baseApi = process.env.BASE_API;
+const baseApi = process.env.BASE_API || 'https://didi.paysys.cn';
 import { removeStorage } from '@/common/utils/cache';
 /**
  * 登录获取个人信息及token
@@ -26,7 +23,7 @@ export const getPhoneNumber = (params) => {
  * 获取油站名称及机构名称
  */
 export const getProgramName = (params) => {
-  return _get('/api/platform/getProgramName' + '/' + process.env.APPID, params, {});
+  return _get('/api/platform/getProgramName' + '/' + (process.env.APPID || 'wx21c2e8ca1f7fe33d'), params, {});
 };
 
 /**

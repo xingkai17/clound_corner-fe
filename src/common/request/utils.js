@@ -61,10 +61,22 @@ const baseConfig = {
  */
 class ApiError extends Error {
   constructor(err) {
-    const msg = err.message || err.msg || '';
+    // 确保 err 是一个对象
+    const errorObj = typeof err === 'object' ? err : { message: String(err) };
+    const msg = errorObj.message || errorObj.msg || errorObj.errMsg || '未知错误';
     super(msg);
-    Object.assign(this, err);
-    this.code = err.code;
+
+    // 安全地复制属性
+    try {
+      Object.assign(this, errorObj);
+      this.code = errorObj.code || 'UNKNOWN_ERROR';
+    } catch (e) {
+      console.warn('ApiError 属性复制失败:', e);
+      this.code = 'UNKNOWN_ERROR';
+    }
+
+    // 确保错误名称正确
+    this.name = 'ApiError';
   }
 }
 
@@ -116,26 +128,31 @@ export function getRequestUrl(serviceName, config) {
  * @param config
  */
 export function fail(err, config, serviceName) {
-  // console.log('fail err', err);
-  if (axios.isCancel(err)) {
+  console.log('请求失败:', { err, config, serviceName });
+
+  // 处理取消请求的情况
+  if (axios.isCancel && axios.isCancel(err)) {
     throw new ApiError({
       code: 'cancel',
       msg: `您取消了请求 ${serviceName}`,
     });
   }
+
   const { errorConfig: { needHint, duration = 300000, showClose = false }, codeArray = [] } = config;
   const errorOptions = {
     icon: 'error',
     duration,
     showClose,
   };
+
+  // 处理有响应的情况
   if (err.response) {
-    const { status, statusCode, data: { errMsg }, data } = err.response;
+    const { status, statusCode, data } = err.response;
     const curStatus = status || statusCode; // 如果是h5为status ，小程序为statusCode
+    const errMsg = data?.errMsg || data?.message || '请求失败';
 
     // 对指定code值 返回正常结果 resolve ;
     let isResolve = false;
-    // console.log(errMsg);
     for (const item of codeArray) {
       if (item === statusCode) {
         isResolve = true;
@@ -166,29 +183,45 @@ export function fail(err, config, serviceName) {
           break;
       }
     }
-    console.log(errorOptions);
-    console.log(curStatus);
+
+    console.log('错误选项:', errorOptions);
+    console.log('状态码:', curStatus);
+
     if (errorOptions.title) {
       if (curStatus === 401) {
         // token无效，建议踢出
-        // dispatchLogout(true);
-        useUserStore().logout();
-        mpx.$emit('Login');
+        try {
+          useUserStore().logout();
+          mpx.$emit('Login');
+        } catch (e) {
+          console.warn('登出失败:', e);
+        }
         showToast(errorOptions.title, 2000);
-        // uni.showToast(errorOptions);
       } else {
         if (curStatus === 403 || curStatus === 500) {
-          mpx.showToast({
-            ...errorOptions,
-            ...config.failShowToastConfig,
-          });
+          try {
+            mpx.showToast({
+              ...errorOptions,
+              ...config.failShowToastConfig,
+            });
+          } catch (e) {
+            console.warn('显示错误提示失败:', e);
+            showToast(errorOptions.title, 2000);
+          }
         } else {
-          // console.log(errorOptions.title);
           showToast(errorOptions.title, 2000);
         }
       }
     }
+  } else {
+    // 处理网络错误或其他错误
+    console.log('网络错误或其他错误:', err);
+    const errorMsg = err.message || err.errMsg || '网络请求失败';
+    if (needHint) {
+      showToast(errorMsg, 2000);
+    }
   }
+
   throw new ApiError(err);
 }
 
