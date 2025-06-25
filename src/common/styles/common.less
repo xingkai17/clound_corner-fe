@@ -1,0 +1,395 @@
+// @theme-primary-color: red;
+
+// @bgc : #f0f0f0; // 背景色
+
+// @fontcolor : #282A2A; // 主题字体颜色
+
+// @maincolor : #3B394A; // 主题色
+
+// @white : #fff; // 白色
+
+// @red : #F23030; // 强调。警告。出错
+
+// @green : #33BE85; // 完成
+
+// @orange : #FF861D; // 评价，补贴，积分
+
+// @skyblue : #31bdbd; //  品类，票据，房地产
+
+// @yellow : #FFB800; // 押金，提示
+
+// @gray: #3B394A; // 输入变高亮
+
+// @noenter: #9D9CA4; // 登录未输入
+
+// @blue: #0077ff;
+
+// @placeholder: #9BA4BD; // input placeholder颜色
+
+// 定位全屏
+.allcover() {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+// 定位滚动全屏
+.allcoverfixed() {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+// 定位上下左右居中
+.center() {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// 定位上下居中
+.centert() {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+// 定位左右居中
+.centerl() {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+// 宽高
+.wh(@width, @height) {
+  width: @width;
+  height: @height;
+}
+
+// 字体大小，颜色
+.sc(@size, @color) {
+  font-size: @size;
+  color: @color;
+}
+
+// flex 布局和 子元素 对其方式
+.fj(@type: space-between) {
+  display: flex;
+  justify-content: @type;
+}
+
+// 1px边框处理
+.bb-1px(@color: '#ebedf0', @left: 0, @right: 0) {
+  position: relative;
+
+  &::after {
+    /* 防止点击触发 */
+    position: absolute;
+    right: @right;
+    bottom: 0;
+    left: @left;
+    box-sizing: border-box;
+    border-bottom: 1px solid @color;
+    -webkit-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    content: " ";
+    pointer-events: none;
+  }
+}
+
+.bt-1px(@color: '#ebedf0', @left: 0, @right: 0) {
+  position: relative;
+
+  &::before {
+    /* 防止点击触发 */
+    position: absolute;
+    top: 0;
+    right: @right;
+    left: @left;
+    box-sizing: border-box;
+    border-top: 1px solid @color;
+    -webkit-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    content: " ";
+    pointer-events: none;
+  }
+}
+
+.bl-1px(@color: '#ebedf0', @top: 0, @left: 0) {
+  position: relative;
+
+  &::before {
+    /* 防止点击触发 */
+    position: absolute;
+    top: @top;
+    left: @left;
+    box-sizing: border-box;
+    border-left: 1px solid @color;
+    height: 100%;
+    -webkit-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    content: " ";
+    pointer-events: none;
+  }
+}
+
+.br-1px(@color: '#ebedf0', @top: 0, @right: 0) {
+  position: relative;
+
+  &::after {
+    /* 防止点击触发 */
+    position: absolute;
+    top: @top;
+    right: @right;
+    box-sizing: border-box;
+    border-right: 1px solid @color;
+    height: 100%;
+    -webkit-transform: scaleY(0.5);
+    -ms-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    content: " ";
+    pointer-events: none;
+  }
+}
+
+.bd-1px(@color) {
+  position: relative;
+
+  &::before {
+    /* 防止点击触发 */
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-sizing: border-box;
+    border: 1px solid @color;
+    content: " ";
+    pointer-events: none;
+  }
+}
+
+.bd-none() {
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
+// 弹性盒
+.f-DAJ(@direction: row, @align: stretch, @justify: flex-start) {
+  /* OLD - Android 4.4- */
+  display: -webkit-box;
+
+  /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;
+
+  /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;
+
+  /* TWEENER - IE 10 */
+  display: -webkit-flex;
+
+  /* NEW - Chrome */
+  display: flex;
+
+  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+
+  /* 09版 */
+  -webkit-box-orient: @direction;
+
+  /* 12版 */
+  -webkit-flex-direction: @direction;
+  -moz-flex-direction: @direction;
+  -ms-flex-direction: @direction;
+  -o-flex-direction: @direction;
+  flex-direction: @direction;
+
+  /* 09版 */
+  -webkit-box-align: @align;
+
+  /* 12版 */
+  -webkit-align-items: @align;
+  -moz-align-items: @align;
+  -ms-align-items: @align;
+  -o-align-items: @align;
+  align-items: @align;
+  -webkit-box-pack: @justify;
+
+  /* 12版 */
+  -webkit-justify-content: @justify;
+  -moz-justify-content: @justify;
+  -ms-justify-content: @justify;
+  -o-justify-content: @justify;
+  justify-content: @justify;
+}
+
+.pflex() {
+  /* flex */
+  display: box;
+
+  /* OLD - Android 4.4- */
+  display: -webkit-box;
+
+  /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;
+
+  /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;
+
+  /* TWEENER - IE 10 */
+  display: -webkit-flex;
+
+  /* NEW - Chrome */
+  display: flex;
+
+  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+
+.flex-v() {
+  /* 父元素-纵向排列（主轴） */
+  display: box;
+
+  /* OLD - Android 4.4- */
+  display: -webkit-box;
+
+  /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;
+
+  /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;
+
+  /* TWEENER - IE 10 */
+  display: -webkit-flex;
+
+  /* NEW - Chrome */
+  display: flex;
+
+  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+
+  /* 09版 */
+  -webkit-box-orient: vertical;
+
+  /* 12版 */
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  -o-flex-direction: column;
+  flex-direction: column;
+}
+
+.flex1() {
+  -webkit-box-flex: 1;
+
+  /* OLD - iOS 6-, Safari 3.1-6 */
+  -moz-box-flex: 1;
+
+  /* OLD - Firefox 19- */
+  width: 20%;
+
+  /* For old syntax, otherwise collapses. */
+  -webkit-flex: 1;
+
+  /* Chrome */
+  -ms-flex: 1;
+
+  /* IE 10 */
+  flex: 1;
+
+  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+
+// 背景渐变
+.bg-gradient(@start: top, @end: 100%, @startColor: #0077ff, @endColor: #3984fe) {
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor));
+
+  /** Chrome Safari **/
+  background: -moz-linear-gradient(@start, @startColor, @endColor);
+
+  /** FireFox **/
+  background: -o-linear-gradient(@start, @startColor, @endColor);
+
+  /** Opear **/
+  background: -ms-linear-gradient(@startColor 0%, @endColor 100%);
+
+  /** IE7 **/
+  -ms-filter: progid:dximagetransform.microsoft.gradient(startcolorstr=@startcolor, endcolorstr=@endcolor, grandienttype=1);
+
+  /** IE9 IE10 **/
+  filter: progid:dximagetransform.microsoft.gradient(startcolorstr=@startcolor, endcolorstr=@endcolor, grandienttype=1);
+
+  /** IE8 **/
+}
+
+// 字体滚动
+.marquee(@animation: scrolltext 10s linear infinite) {
+  animation: @animation;
+
+  @keyframes scrolltext {
+
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+.transform (@direction) when (@direction ='up') {
+  transform: rotateZ(135deg);
+}
+
+.transform (@direction) when (@direction ='down') {
+  transform: rotateZ(-45deg);
+}
+
+.transform (@direction) when (@direction ='left') {
+  transform: rotateZ(45deg);
+}
+
+.transform (@direction) when (@direction ='right') {
+  transform: rotateZ(-135deg);
+}
+
+// 一行文字
+.one-ellipsis() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// 多行文字显示省略
+.ellipsis(@num:2) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @num;
+}
+
+.oneLine() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.moreLine(@num) {
+  display: -webkit-box;
+  -webkit-line-clamp: @num;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
