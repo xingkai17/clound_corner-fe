@@ -94,7 +94,7 @@ createComponent({
         type: 'line',
         color: '#2fc25b',
         data: [120, 140, 105, 170, 95, 160],
-      },],
+      }],
     },
   },
 
@@ -112,7 +112,7 @@ createComponent({
     copy(e) {
       const value = e.currentTarget.dataset.value;
       mpx.setClipboardData({ data: value });
-    }
+    },
   },
 });
 </script>

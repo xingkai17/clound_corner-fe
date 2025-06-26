@@ -73,10 +73,19 @@
     "stylus": "0.55.0",
     "stylus-loader": "6.1.0",
     "webpack": "5.83.1",
-    "webpackbar": "7.0.0"
+    "webpackbar": "7.0.0",
+    "husky": "7.0.4",
+    "lint-staged": "13.2.2",
+    "validate-commit-msg": "2.14.0"
   },
   "browserslist": [
     "ios >= 8",
     "chrome >= 47"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "validate-commit-msg"
+    }
+  }
 }

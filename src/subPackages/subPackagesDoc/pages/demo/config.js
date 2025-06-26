@@ -1,3 +1,6 @@
+/*
+ * @Description
+ */
 const DEFAULT_CATEGORY = 'other';
 const categoryMap = {
   'Docs': { label: '文档', seq: 1 },

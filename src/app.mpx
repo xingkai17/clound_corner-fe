@@ -29,7 +29,7 @@ createApp({
       "./pages/index/entry"
     ],
     "packages": [
-      "./subPackages/subPackagesDoc/demo/entry?root=subPackagesDoc"
+      "./subPackages/subPackagesDoc/entry?root=subPackagesDoc"
     ]
   }
 </script>

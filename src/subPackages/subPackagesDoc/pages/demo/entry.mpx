@@ -87,7 +87,7 @@ createPage({
       if (storedValue) {
         this.value = storedValue;
       }
-    } catch (err) {
+    } catch {
       // 首次运行或存储中没有数据，使用默认值
       console.log('使用默认组件值');
     }
@@ -119,7 +119,7 @@ createPage({
         console.error('showDialog错误:', error);
         mpx.showToast({
           title: '组件列表加载失败',
-          icon: 'none'
+          icon: 'none',
         });
       }
     },
@@ -191,16 +191,16 @@ createPage({
 {
   "pages": [
     "./entry",
-    "../test/entry"
+    "./pages/test/entry"
   ],
   "usingComponents": {
     "UChartsDemo": "./components/UCharts.mpx",
     "ApiDemo": "./components/Api.mpx",
     "WxDemo": "./components/Wx.mpx",
-    "ColumnChart": "../../../common/components/Charts/ColumnChart.mpx",
-    "BarChart": "../../../common/components/Charts/BarChart.mpx",
-    "PieChart": "../../../common/components/Charts/PieChart.mpx",
-    "MixChart": "../../../common/components/Charts/MixChart.mpx"
+    "ColumnChart": "@/common/components/Charts/ColumnChart.mpx",
+    "BarChart": "@/common/components/Charts/BarChart.mpx",
+    "PieChart": "@/common/components/Charts/PieChart.mpx",
+    "MixChart": "@/common/components/Charts/MixChart.mpx"
   }
 }
 </script>
