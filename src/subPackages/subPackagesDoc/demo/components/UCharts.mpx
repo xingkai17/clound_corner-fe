@@ -12,34 +12,113 @@
     </view>
 
     <view>
-      <text>目前使用的是"原生方式"，查看官网的示例代码：进入"官方示例"页面，点击图表下方的"查看代码"，选择顶部的"uni-app"、底部的"原生"按钮，可以看到具体代码。</text>
+      <text>目前使用的是"组件方式"，直接引用src/common/components/Charts下的图表组件。</text>
     </view>
 
     <view class="chart-title">柱状图 column</view>
-    <canvas id="columnChart" type="2d" class="charts" bindtap="tap"/>
+    <ColumnChart xAxisData="{{columnChartData.categories}}" seriesData="{{columnChartData.series}}" />
 
     <view class="chart-title">条状图 bar</view>
-    <canvas id="barChart" type="2d" class="charts" bindtap="tap"/>
+    <BarChart xAxisData="{{barChartData.categories}}" seriesData="{{barChartData.series}}" />
 
     <view class="chart-title">饼图 pie</view>
-    <canvas id="pieChart" type="2d" class="charts" bindtap="tap"/>
+    <PieChart seriesData="{{peiChartData.series}}" />
 
     <view class="chart-title">多坐标系混合图</view>
-    <canvas id="mixChart" type="2d" class="charts" bindtap="tap"/>
+    <MixChart xAxisData="{{mixChartData.categories}}" seriesData="{{mixChartData.series}}" />
 
   </view>
 </template>
 
 <script>
 import mpx, { createComponent } from '@mpxjs/core';
-import uCharts from '@/common/components/Charts/@qiun/ucharts/u-charts.min.js';
-
-// 记录图表实例
-const uChartsInstance = {};
 
 createComponent({
   data: {
-    chartReady: false
+    chartReady: false,
+    // 柱状图数据
+    columnChartData: {
+      categories: ['2016', '2017', '2018', '2019', '2020', '2021'],
+      series: [
+        {
+          name: '目标值',
+          data: [35, 36, 31, 33, 13, 34],
+        },
+        {
+          name: '完成量',
+          data: [18, 27, 21, 24, 6, 28],
+        },
+      ],
+    },
+    // 条状图数据
+    barChartData: {
+      categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
+      series: [
+        {
+          name: '目标值',
+          data: [35, 36, 31, 33, 13, 34],
+        },
+        {
+          name: '完成量',
+          data: [18, 27, 21, 24, 6, 28],
+        },
+      ],
+    },
+    // 饼图数据
+    peiChartData: {
+      series: [
+        {
+          data: [{ 'name': '一班', 'value': 50 }, { 'name': '二班', 'value': 30 }, { 'name': '三班', 'value': 20 }, { 'name': '四班', 'value': 18 }, { 'name': '五班', 'value': 8 }],
+        },
+      ],
+    },
+    // 多坐标系混合图数据
+    mixChartData: {
+      categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
+      series: [{
+        name: '曲面',
+        type: 'area',
+        style: 'curve',
+        data: [70, 50, 85, 130, 64, 88],
+      },
+      {
+        name: '柱1',
+        index: 1,
+        type: 'column',
+        data: [40, {
+          'value': 30,
+          'color': '#f04864',
+        }, 55, 110, 24, 58],
+      },
+      {
+        name: '柱2',
+        index: 1,
+        type: 'column',
+        data: [50, 20, 75, 60, 34, 38],
+      },
+      {
+        name: '曲线',
+        type: 'line',
+        style: 'curve',
+        color: '#1890ff',
+        disableLegend: true,
+        data: [70, 50, 85, 130, 64, 88],
+      },
+      {
+        name: '折线',
+        type: 'line',
+        color: '#2fc25b',
+        data: [120, 140, 105, 170, 95, 160],
+      },
+      {
+        name: '点',
+        index: 2,
+        type: 'point',
+        color: '#f04864',
+        data: [100, 80, 125, 150, 112, 132],
+      },
+      ],
+    },
   },
 
   attached() {
@@ -48,16 +127,7 @@ createComponent({
 
   ready() {
     console.log('UCharts组件ready');
-
-    // 验证uCharts库是否正确导入
-    console.log('UCharts库检查:', {
-      UCharts: typeof uCharts,
-      UChartsConstructor: uCharts,
-      hasChart: !!uCharts
-    });
-
     this.setData({ chartReady: true });
-    this.init();
   },
 
   methods: {
@@ -65,434 +135,12 @@ createComponent({
     copy(e) {
       const value = e.currentTarget.dataset.value;
       mpx.setClipboardData({ data: value });
-    },
-
-    init() {
-      console.log('UCharts组件初始化开始');
-      try {
-        // 使用nextTick确保DOM完全渲染，然后增加延时确保Canvas节点完全创建
-        mpx.nextTick(() => {
-          console.log('DOM渲染完成，等待Canvas节点创建...');
-          setTimeout(() => {
-            console.log('开始绘制图表');
-            try {
-              this.drawColumnChart('columnChart', columnChartData);
-              this.drawBarChart('barChart', barChartData);
-              this.drawPieChart('pieChart', peiChartData);
-              this.drawMixChart('mixChart', mixChartData);
-            } catch (error) {
-              console.error('绘制图表时出错:', error);
-            }
-          }, 200); // 增加200ms延时确保Canvas节点完全创建
-        });
-      } catch (error) {
-        console.error('初始化时出错:', error);
-      }
-    },
-
-    // 图表点击
-    tap(e) {
-      // e.target.id 使用的是 id 属性
-      uChartsInstance[e.target.id].touchLegend(e);
-      uChartsInstance[e.target.id].showToolTip(e);
-    },
-
-    /**
-     * @description 绘制图表-柱状图
-     * @param id canvas-id
-     * @param data 图表数据
-     */
-    drawColumnChart(id, data) {
-      console.log(`开始绘制柱状图: ${id}`, data);
-
-      // 检查数据
-      if (!data || !data.categories || !data.series) {
-        console.error('图表数据不完整:', data);
-        return;
-      }
-
-      this.tryDrawChart(id, data, 'column', 0);
-    },
-
-    // 重试绘制图表的方法
-    tryDrawChart(id, data, type, retryCount = 0) {
-      const maxRetries = 3;
-      const query = mpx.createSelectorQuery().in(this);
-
-      query.select(`#${id}`)
-        .fields({ node: true, size: true })
-        .exec((res) => {
-          console.log(`${type}图Canvas查询结果:`, res);
-
-          // 安全检查：确保res[0]和res[0].node存在
-          if (!res || !res[0] || !res[0].node) {
-            console.warn(`Canvas节点未找到: ${id}, 重试次数: ${retryCount}`);
-
-            if (retryCount < maxRetries) {
-              // 重试
-              setTimeout(() => {
-                this.tryDrawChart(id, data, type, retryCount + 1);
-              }, 100);
-              return;
-            } else {
-              console.error(`Canvas节点未找到: ${id}, 已达到最大重试次数`);
-              return;
-            }
-          }
-
-          console.log(`${type}图Canvas节点找到: ${id}`, res[0]);
-
-          try {
-            // Canvas 对象
-            const canvas = res[0].node;
-            // Canvas 画布的实际绘制宽高
-            const renderWidth = res[0].width;
-            const renderHeight = res[0].height;
-            console.log(`${type}图Canvas尺寸: ${renderWidth}x${renderHeight}`);
-
-            // 检查尺寸
-            if (renderWidth <= 0 || renderHeight <= 0) {
-              console.error('Canvas尺寸无效:', renderWidth, renderHeight);
-              return;
-            }
-
-            // Canvas 绘制上下文
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-              console.error('无法获取Canvas上下文');
-              return;
-            }
-
-            console.log(`${type}图Canvas上下文获取成功:`, ctx);
-
-            // 初始化画布大小
-            const dpr = mpx.getWindowInfo().pixelRatio || 1;
-            console.log(`${type}图设备像素比:`, dpr);
-
-            canvas.width = renderWidth * dpr;
-            canvas.height = renderHeight * dpr;
-            ctx.scale(dpr, dpr);
-
-            console.log(`${type}图Canvas设置完成 - 宽度: ${canvas.width}, 高度: ${canvas.height}`);
-
-            console.log(`创建${type}图UCharts实例`);
-
-            const chartConfig = this.getChartConfig(type, ctx, renderWidth, renderHeight, data);
-            console.log(`${type}图配置:`, chartConfig);
-
-            // 使用正确的uCharts初始化方式
-            const chart = new uCharts(chartConfig);
-            uChartsInstance[id] = chart;
-
-            // 验证图表实例
-            if (chart) {
-              console.log(`${type}图UCharts实例创建成功:`, chart);
-              console.log(`${type}图UCharts实例方法:`, Object.getOwnPropertyNames(chart));
-
-              // 检查是否有updateData方法
-              if (typeof chart.updateData === 'function') {
-                console.log(`${type}图updateData方法可用`);
-              } else {
-                console.warn(`${type}图updateData方法不可用`);
-              }
-
-              // 检查是否有draw方法
-              if (typeof chart.draw === 'function') {
-                console.log(`${type}图draw方法可用`);
-                try {
-                  chart.draw();
-                  console.log(`${type}图手动draw调用成功`);
-                } catch (drawError) {
-                  console.error(`${type}图手动draw调用失败:`, drawError);
-                }
-              } else {
-                console.warn(`${type}图draw方法不可用`);
-                // 尝试其他可能的绘制方法
-                if (typeof chart.render === 'function') {
-                  console.log(`${type}图使用render方法`);
-                  try {
-                    chart.render();
-                    console.log(`${type}图render调用成功`);
-                  } catch (renderError) {
-                    console.error(`${type}图render调用失败:`, renderError);
-                  }
-                }
-              }
-
-              // 尝试手动更新图表
-              try {
-                chart.updateData({
-                  series: data.series,
-                  categories: data.categories
-                });
-                console.log(`${type}图数据更新成功`);
-              } catch (updateError) {
-                console.error(`${type}图数据更新失败:`, updateError);
-              }
-            } else {
-              console.error(`${type}图UCharts实例创建失败`);
-            }
-
-            console.log(`${type}图绘制完成: ${id}`);
-          } catch (error) {
-            console.error(`绘制${type}图时出错: ${id}`, error);
-            console.error('错误详情:', error.message, error.stack);
-          }
-        });
-    },
-
-    // 获取图表配置
-    getChartConfig(type, ctx, width, height, data) {
-      const baseConfig = {
-        context: ctx,
-        width: width,
-        height: height,
-        animation: true,
-        background: '#FFFFFF',
-        color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
-        enableScroll: false,
-        legend: {
-          show: false
-        }
-      };
-
-      switch (type) {
-        case 'column':
-          return {
-            ...baseConfig,
-            type: 'column',
-            categories: data.categories,
-            series: data.series,
-            padding: [15, 15, 0, 15],
-            xAxis: {
-              disableGrid: true,
-            },
-            yAxis: {
-              data: [{ min: 0 }],
-            },
-            extra: {
-              column: {
-                type: 'group',
-              },
-            },
-          };
-        case 'bar':
-          return {
-            ...baseConfig,
-            type: 'bar',
-            categories: data.categories,
-            series: data.series,
-            padding: [15, 30, 0, 5],
-            xAxis: {
-              boundaryGap: 'justify',
-              disableGrid: false,
-              min: 0,
-              axisLine: false,
-              max: 40,
-            },
-            yAxis: {},
-            extra: {
-              bar: {
-                type: 'group',
-                width: 30,
-                meterBorde: 1,
-                meterFillColor: '#FFFFFF',
-                activeBgColor: '#000000',
-                activeBgOpacity: 0.08,
-                linearType: 'custom',
-                barBorderCircle: true,
-                seriesGap: 2,
-                categoryGap: 2,
-              },
-            },
-          };
-        case 'pie':
-          return {
-            ...baseConfig,
-            type: 'pie',
-            series: data.series,
-            padding: [5, 5, 5, 5],
-            extra: {
-              pie: {
-                activeOpacity: 0.5,
-                activeRadius: 10,
-                offsetAngle: 0,
-                labelWidth: 15,
-                border: false,
-                borderWidth: 3,
-                borderColor: '#FFFFFF',
-              },
-            },
-          };
-        case 'mix':
-          return {
-            ...baseConfig,
-            type: 'mix',
-            categories: data.categories,
-            series: data.series,
-            padding: [15, 15, 0, 5],
-            xAxis: {
-              axisLine: false,
-              disableGrid: true,
-            },
-            yAxis: {
-              disabled: false,
-              axisLine: false,
-              disableGrid: false,
-              splitNumber: 5,
-              gridType: 'dash',
-              dashLength: 4,
-              gridColor: '#CCCCCC',
-              padding: 10,
-              showTitle: false,
-              data: data.yAxisData || [],
-            },
-            extra: {
-              mix: {
-                column: {
-                  width: 11,
-                },
-                line: {
-                  width: 2,
-                },
-              },
-            },
-          };
-        default:
-          return baseConfig;
-      }
-    },
-
-    /**
-     * @description 绘制图表-条状图
-     * @param id canvas-id
-     * @param data 图表数据
-     */
-    drawBarChart(id, data) {
-      console.log(`开始绘制条形图: ${id}`, data);
-      this.tryDrawChart(id, data, 'bar', 0);
-    },
-
-    /**
-     * @description 绘制图表-饼图
-     * @param id canvas-id
-     * @param data 图表数据
-     */
-    drawPieChart(id, data) {
-      console.log(`开始绘制饼图: ${id}`, data);
-      this.tryDrawChart(id, data, 'pie', 0);
-    },
-
-    /**
-     * @description 绘制图表-多坐标系混合图
-     * @param id canvas-id
-     * @param data 图表数据
-     */
-    drawMixChart(id, data) {
-      console.log(`开始绘制混合图: ${id}`, data);
-      this.tryDrawChart(id, data, 'mix', 0);
-    },
+    }
   },
 });
-
-// 柱状图数据
-const columnChartData = {
-  categories: ['2016', '2017', '2018', '2019', '2020', '2021'],
-  series: [
-    {
-      name: '目标值',
-      data: [35, 36, 31, 33, 13, 34],
-    },
-    {
-      name: '完成量',
-      data: [18, 27, 21, 24, 6, 28],
-    },
-  ],
-};
-
-// 条状图数据
-const barChartData = {
-  categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
-  series: [
-    {
-      name: '目标值',
-      data: [35, 36, 31, 33, 13, 34],
-    },
-    {
-      name: '完成量',
-      data: [18, 27, 21, 24, 6, 28],
-    },
-  ],
-};
-
-// 饼图数据
-const peiChartData = {
-  series: [
-    {
-      data: [{ 'name': '一班', 'value': 50 }, { 'name': '二班', 'value': 30 }, { 'name': '三班', 'value': 20 }, { 'name': '四班', 'value': 18 }, { 'name': '五班', 'value': 8 }],
-    },
-  ],
-};
-
-// 多坐标系混合图数据
-const mixChartData = {
-  categories: ['2018', '2019', '2020', '2021', '2022', '2023'],
-  series: [{
-    name: '曲面',
-    type: 'area',
-    style: 'curve',
-    data: [70, 50, 85, 130, 64, 88],
-  },
-  {
-    name: '柱1',
-    index: 1,
-    type: 'column',
-    data: [40, {
-      'value': 30,
-      'color': '#f04864',
-    }, 55, 110, 24, 58],
-  },
-  {
-    name: '柱2',
-    index: 1,
-    type: 'column',
-    data: [50, 20, 75, 60, 34, 38],
-  },
-  {
-    name: '曲线',
-    type: 'line',
-    style: 'curve',
-    color: '#1890ff',
-    disableLegend: true,
-    data: [70, 50, 85, 130, 64, 88],
-  },
-  {
-    name: '折线',
-    type: 'line',
-    color: '#2fc25b',
-    data: [120, 140, 105, 170, 95, 160],
-  },
-  {
-    name: '点',
-    index: 2,
-    type: 'point',
-    color: '#f04864',
-    data: [100, 80, 125, 150, 112, 132],
-  },
-  ],
-};
 </script>
 
 <style lang="less" scoped>
-  .charts {
-    width: 100%;
-    height: 250px;
-    margin: 10px 0; /* 添加间距 */
-    position: relative; /* 确保定位正确 */
-    z-index: 1000; /* 确保在最上层 */
-    display: block; /* 确保显示 */
-  }
-
   .chart-title {
     font-size: 16px;
     font-weight: bold;
@@ -510,3 +158,14 @@ const mixChartData = {
     min-height: 100vh; /* 确保有足够的高度 */
   }
 </style>
+
+<script type="application/json">
+{
+  "usingComponents": {
+    "ColumnChart": "@/common/components/Charts/ColumnChart.mpx",
+    "BarChart": "@/common/components/Charts/BarChart.mpx",
+    "PieChart": "@/common/components/Charts/PieChart.mpx",
+    "MixChart": "@/common/components/Charts/MixChart.mpx"
+  }
+}
+</script>

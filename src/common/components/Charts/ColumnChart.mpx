@@ -91,11 +91,14 @@ createComponent({
     'xAxisData': function() {
       this.init();
     },
+    'seriesData': function() {
+      this.init();
+    },
   },
 
-  // attached() {
-  //   this.init();
-  // },
+  attached() {
+    this.init();
+  },
 
   methods: {
     init() {
@@ -120,6 +123,12 @@ createComponent({
     drawColumnChart(id) {
       const query = mpx.createSelectorQuery().in(this);
 
+      console.log('ColumnChart 数据检查:', {
+        xAxisData: this.data.xAxisData,
+        seriesData: this.data.seriesData,
+        chartId: this.data.chartId,
+      });
+
       setTimeout(() => {
         let newSeriesData = this.data.seriesData;
 
@@ -137,6 +146,13 @@ createComponent({
         query.select(`#${id}`) // 在 WXML 中填入的 id
           .fields({ node: true, size: true })
           .exec((res) => {
+            console.log('ColumnChart Canvas查询结果:', res);
+
+            if (!res || !res[0] || !res[0].node) {
+              console.error('ColumnChart Canvas节点未找到');
+              return;
+            }
+
             // Canvas 对象
             const canvas = res[0].node;
             // Canvas 画布的实际绘制宽高
@@ -144,16 +160,34 @@ createComponent({
             const renderHeight = res[0].height;
             // Canvas 绘制上下文
             const ctx = canvas.getContext('2d');
-            // 初始化画布大小
-            const dpr = mpx.getWindowInfo().pixelRatio;
+
+            // 获取设备像素比，确保高分辨率显示
+            const dpr = mpx.getSystemInfoSync().pixelRatio || 1;
+            console.log('ColumnChart 设备像素比:', dpr, 'Canvas尺寸:', renderWidth, 'x', renderHeight);
+
+            // 设置Canvas的实际像素尺寸（物理像素）
             canvas.width = renderWidth * dpr;
             canvas.height = renderHeight * dpr;
+
+            // 缩放绘图上下文以匹配设备像素比
             ctx.scale(dpr, dpr);
+
+            // 设置Canvas渲染优化
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            console.log('ColumnChart 创建UCharts实例:', {
+              categories: this.data.xAxisData,
+              series: newSeriesData,
+              width: renderWidth,
+              height: renderHeight,
+            });
+
             uChartsInstance[id] = new UCharts({
               type: 'column',
               context: ctx,
-              width: renderWidth, // 单位 px
-              height: renderHeight, // 单位 px
+              width: renderWidth, // 使用逻辑像素尺寸
+              height: renderHeight, // 使用逻辑像素尺寸
               categories: this.data.xAxisData,
               series: newSeriesData,
               animation: true,
@@ -204,6 +238,8 @@ createComponent({
               },
               ...this.data.config,
             });
+
+            console.log('ColumnChart UCharts实例创建成功');
           });
       });
     },
@@ -224,6 +260,15 @@ createComponent({
 
   .charts {
     width: 100%;
+    /* 确保Canvas在高分辨率设备上显示清晰 */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 防止Canvas被压缩 */
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 }
 </style>

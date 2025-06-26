@@ -86,11 +86,14 @@ createComponent({
     'xAxisData': function() {
       this.init();
     },
+    'seriesData': function() {
+      this.init();
+    },
   },
 
-  // attached() {
-  //   this.init();
-  // },
+  attached() {
+    this.init();
+  },
 
   methods: {
     init() {
@@ -126,11 +129,22 @@ createComponent({
             const renderHeight = res[0].height;
             // Canvas 绘制上下文
             const ctx = canvas.getContext('2d');
-            // 初始化画布大小
-            const dpr = mpx.getWindowInfo().pixelRatio;
+
+            // 获取设备像素比，确保高分辨率显示
+            const dpr = mpx.getSystemInfoSync().pixelRatio || 1;
+            console.log('MixChart 设备像素比:', dpr, 'Canvas尺寸:', renderWidth, 'x', renderHeight);
+
+            // 设置Canvas的实际像素尺寸（物理像素）
             canvas.width = renderWidth * dpr;
             canvas.height = renderHeight * dpr;
+
+            // 缩放绘图上下文以匹配设备像素比
             ctx.scale(dpr, dpr);
+
+            // 设置Canvas渲染优化
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
             uChartsInstance[id] = new UCharts({
               type: 'mix',
               context: ctx,

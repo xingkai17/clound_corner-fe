@@ -195,8 +195,11 @@ createPage({
   "usingComponents": {
     "UChartsDemo": "./components/UCharts.mpx",
     "ApiDemo": "./components/Api.mpx",
-    "WxDemo": "./components/Wx.mpx"
-
+    "WxDemo": "./components/Wx.mpx",
+    "ColumnChart": "../../../common/components/Charts/ColumnChart.mpx",
+    "BarChart": "../../../common/components/Charts/BarChart.mpx",
+    "PieChart": "../../../common/components/Charts/PieChart.mpx",
+    "MixChart": "../../../common/components/Charts/MixChart.mpx"
   }
 }
 </script>
