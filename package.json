@@ -89,8 +89,9 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,mpx}": [
-      "eslint --fix"
+    "src/**/*.{txs,ts,mpx}": [
+      "eslint --fix",
+      "git add"
     ]
   }
 }
