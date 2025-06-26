@@ -82,21 +82,6 @@ createComponent({
         data: [70, 50, 85, 130, 64, 88],
       },
       {
-        name: '柱1',
-        index: 1,
-        type: 'column',
-        data: [40, {
-          'value': 30,
-          'color': '#f04864',
-        }, 55, 110, 24, 58],
-      },
-      {
-        name: '柱2',
-        index: 1,
-        type: 'column',
-        data: [50, 20, 75, 60, 34, 38],
-      },
-      {
         name: '曲线',
         type: 'line',
         style: 'curve',
@@ -109,15 +94,7 @@ createComponent({
         type: 'line',
         color: '#2fc25b',
         data: [120, 140, 105, 170, 95, 160],
-      },
-      {
-        name: '点',
-        index: 2,
-        type: 'point',
-        color: '#f04864',
-        data: [100, 80, 125, 150, 112, 132],
-      },
-      ],
+      },],
     },
   },
 
