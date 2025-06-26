@@ -190,7 +190,8 @@ createPage({
 <script type="application/json">
 {
   "pages": [
-    "./entry"
+    "./entry",
+    "../test/entry"
   ],
   "usingComponents": {
     "UChartsDemo": "./components/UCharts.mpx",
