@@ -1,0 +1,159 @@
+<!-- 测试图表组件 -->
+<template>
+  <view class="test-chart">
+    <view class="title">测试图表</view>
+
+    <!-- 简单的柱状图 -->
+    <view class="chart-container">
+      <canvas
+        id="testChart"
+        type="2d"
+        class="chart-canvas"
+        bindtap="tap"
+      />
+    </view>
+
+    <view class="info">
+      <text>图表状态: {{chartStatus}}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+import mpx, { createComponent } from '@mpxjs/core';
+import UCharts from '@/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+
+createComponent({
+  data: {
+    chartStatus: '初始化中...'
+  },
+
+  attached() {
+    this.initChart();
+  },
+
+  methods: {
+    initChart() {
+      console.log('测试图表初始化');
+      this.setData({ chartStatus: '开始初始化...' });
+
+      setTimeout(() => {
+        this.drawTestChart();
+      }, 500);
+    },
+
+    drawTestChart() {
+      console.log('开始绘制测试图表');
+      this.setData({ chartStatus: '绘制中...' });
+
+      const query = mpx.createSelectorQuery().in(this);
+      query.select('#testChart')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          console.log('Canvas查询结果:', res);
+
+          if (!res || !res[0] || !res[0].node) {
+            console.error('Canvas节点未找到');
+            this.setData({ chartStatus: 'Canvas节点未找到' });
+            return;
+          }
+
+          try {
+            const canvas = res[0].node;
+            const renderWidth = res[0].width;
+            const renderHeight = res[0].height;
+
+            console.log(`Canvas尺寸: ${renderWidth}x${renderHeight}`);
+
+            const ctx = canvas.getContext('2d');
+            const dpr = mpx.getWindowInfo().pixelRatio;
+
+            canvas.width = renderWidth * dpr;
+            canvas.height = renderHeight * dpr;
+            ctx.scale(dpr, dpr);
+
+            console.log('创建UCharts实例');
+
+            new UCharts({
+              type: 'column',
+              context: ctx,
+              width: renderWidth,
+              height: renderHeight,
+              categories: ['1月', '2月', '3月', '4月', '5月', '6月'],
+              series: [
+                {
+                  name: '销售额',
+                  data: [35, 36, 31, 33, 13, 34]
+                }
+              ],
+              animation: true,
+              background: '#FFFFFF',
+              color: ['#1890FF'],
+              padding: [15, 15, 0, 15],
+              enableScroll: false,
+              legend: {
+                show: false
+              },
+              xAxis: {
+                disableGrid: true
+              },
+              yAxis: {
+                data: [{ min: 0 }]
+              },
+              extra: {
+                column: {
+                  type: 'group'
+                }
+              }
+            });
+
+            console.log('测试图表绘制完成');
+            this.setData({ chartStatus: '绘制完成' });
+
+          } catch (error) {
+            console.error('绘制图表时出错:', error);
+            this.setData({ chartStatus: `绘制失败: ${error.message}` });
+          }
+        });
+    },
+
+    tap(e) {
+      console.log('图表点击事件:', e);
+    }
+  }
+});
+</script>
+
+<style lang="less" scoped>
+.test-chart {
+  padding: 20px;
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .chart-container {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .chart-canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .info {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    text-align: center;
+  }
+}
+</style>

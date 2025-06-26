@@ -23,7 +23,7 @@
 <script>
 import mpx, { createComponent } from '@mpxjs/core';
 // @ignore
-import UCharts from 'src/pages/subPagesBusiness/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+import UCharts from '@/common/components/Charts/@qiun/ucharts/u-charts.min.js';
 import { themeColor } from '@/common/utils/data';
 
 // 记录图表实例
@@ -91,7 +91,7 @@ createComponent({
     init() {
       // 模拟从服务器获取数据时的延时
       setTimeout(() => {
-        this.drawBarChart(this.data.chartId);
+        this.drawRadarChart(this.data.chartId);
       }, 200);
     },
 
@@ -107,7 +107,7 @@ createComponent({
      * @param id canvas-id
      * @param data 图表数据
      */
-    drawBarChart(id) {
+    drawRadarChart(id) {
       const query = mpx.createSelectorQuery().in(this);
 
       setTimeout(() => {

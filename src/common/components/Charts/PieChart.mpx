@@ -23,7 +23,7 @@
 <script>
 import mpx, { createComponent } from '@mpxjs/core';
 // @ignore
-import UCharts from 'src/pages/subPagesBusiness/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+import UCharts from '@/common/components/Charts/@qiun/ucharts/u-charts.min.js';
 import { themeColor } from '@/common/utils/data';
 
 // 记录图表实例
