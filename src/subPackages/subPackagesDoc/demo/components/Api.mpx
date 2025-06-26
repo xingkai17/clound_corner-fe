@@ -18,7 +18,7 @@
 
 <script>
 import mpx, { createComponent } from '@mpxjs/core';
-import { _get, _post } from 'src/common/request/index';
+import { _get, _post } from '@/common/request/index';
 
 createComponent({
   methods: {

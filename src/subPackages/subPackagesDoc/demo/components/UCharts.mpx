@@ -30,7 +30,7 @@
 
 <script>
 import mpx, { createComponent } from '@mpxjs/core';
-import UCharts from 'src/common/components/Charts/@qiun/ucharts/u-charts.min.js';
+import UCharts from '@/common/components/Charts/@qiun/ucharts/u-charts.min.js';
 
 // 记录图表实例
 const uChartsInstance = {};

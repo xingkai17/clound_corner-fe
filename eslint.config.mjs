@@ -3,6 +3,11 @@ import mpxEslintParser from 'mpx-eslint-parser';
 
 export default [
   {
+    ignores: [
+      'src/subPackages/subPackagesDoc/demo/**/*'
+    ],
+  },
+  {
     files: ['**/*.mpx'],
     languageOptions: {
       parser: mpxEslintParser,
