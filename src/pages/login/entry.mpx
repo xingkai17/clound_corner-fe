@@ -7,13 +7,17 @@
     <image class="image" :src="`${imgUrl}/images/login.png`"/>
 
     <LoginButton/>
+
+    <!-- 跳转到分包demo页面的按钮 -->
+    <button class="demo-btn" bindtap="goToDemo">进入Demo页面</button>
   </view>
 </template>
 
 <script>
-import { createPage } from '@mpxjs/core';
+import mpx, { createPage } from '@mpxjs/core';
 import { useSysInfoStore } from '@/store/sysInfo';
 import Omega from '@didi/tracker-mpapp';
+import demoPathPage from '@/subPackages/subPackagesDoc/pages/demo/entry.mpx?resolve';
 
 createPage({
   data: {
@@ -30,7 +34,12 @@ createPage({
     });
   },
   methods: {
-
+    goToDemo() {
+      // 使用 ?resolve 获取正确的分包页面路径
+      mpx.navigateTo({
+        url: demoPathPage,
+      });
+    },
   },
 });
 </script>
@@ -73,6 +82,18 @@ createPage({
     display: block;
     margin: 0 auto;
     padding-top: 96rpx;
+  }
+
+  .demo-btn {
+    margin: 40rpx auto;
+    width: 300rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    background: #007AFF;
+    color: #FFFFFF;
+    font-size: 28rpx;
+    border-radius: 40rpx;
+    border: none;
   }
 
 }
