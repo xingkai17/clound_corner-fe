@@ -87,5 +87,10 @@
       "pre-commit": "lint-staged",
       "commit-msg": "validate-commit-msg"
     }
+  },
+  "lint-staged": {
+    "*.{js,ts,mpx}": [
+      "eslint --fix"
+    ]
   }
 }
