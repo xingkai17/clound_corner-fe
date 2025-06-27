@@ -4,35 +4,501 @@ import apiProxy from '@mpxjs/api-proxy';
 import { createPinia } from 'pinia';
 import Vue from 'vue';
 
+// 导入工具和配置
+import { initConfig, Config } from './common/utils/config';
+import RPC from './common/utils/rpc';
+import API from './common/utils/api';
+import RespStatus from './common/models/RespStatus';
+import app from './common/utils/app';
+
 mpx.use(apiProxy, { usePromise: true });
 
 const pinia = createPinia();
 Vue.use(pinia);
 
+// 初始化配置
+initConfig();
+
+// 设置 API 基础 URL
+API.setFullURIApi(Config.baseURI + Config.baseAPI);
+API.setFullBuriedPointURIApi(Config.baseURI + Config.billbaseAPI);
+API.setFullGroupApi(Config.baseURI + Config.groupApi);
+
+// 设置 RPC 基础 URL
+RPC.setBaseURL(Config.baseURI);
+
 createApp({
-  onLaunch() {
-    //
+  onLaunch(option) {
+    console.log('onLaunch', option);
+
+    // 保存场景值
+    app.setScene(option.scene);
+
+    // 初始化应用
+    app.init();
+
+    // 保存日志
+    const logs = mpx.getStorageSync('logs') || [];
+    logs.unshift(Date.now());
+    mpx.setStorageSync('logs', logs);
   },
+
+  onShow(option) {
+    console.log('onShow', option);
+
+    // 处理特定页面的场景限制
+    if (option.path === 'pages/payinfo/payinfo' && !option.query.source) {
+      if (option.scene !== 1037) {
+        mpx.reLaunch({
+          url: '/pages/home/homePage/homePage',
+        });
+        return;
+      }
+    }
+
+    if (option.path === 'pages/confirmPayWeb/confirmPayWeb') {
+      if (option.scene !== 1065 && option.scene !== 1167 && option.scene !== 1194 && option.scene !== 1037) {
+        mpx.reLaunch({
+          url: '/pages/home/homePage/homePage',
+        });
+        return;
+      }
+    }
+  },
+
+  onHide() {
+    // 程序切入后台后，清除保存的位置信息及员工二维码
+    new RespStatus({ staffId: '0' });
+
+    const globalData = app.getGlobalData();
+    if (globalData.selUid) {
+      globalData.selUid = '';
+      globalData.selName = '';
+      globalData.selAddress = '';
+    }
+  },
+
+  // 全局数据
+  globalData: app.getGlobalData(),
 });
 </script>
 
 <style lang="less">
+.container {
+  /* height: 100%; */
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* justify-content: space-between; */
+  /* padding: 200rpx 0; */
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+  font-family: BlinkMacSystemFont, 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 
-  @import './common/styles/common.less';
+page {
+  width: 750rpx;
+  height: 100%;
+  display: flex;
+  flex: 1;
+}
 
-  /*此处编写全局样式*/
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.redIcon {
+  width: 5rpx;
+  height: 28rpx;
+  background-color: #fb4343;
+}
+
+.line {
+  width: 750rpx;
+  height: 6rpx;
+  background-color: #f5f5f5;
+  /* border-top: 1rpx solid #eee; */
+  /* border-bottom: 1rpx solid #eee; */
+}
+
+.btnWrp {
+  /* margin-top: 60rpx; */
+  margin-bottom: 60rpx !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 690rpx;
+  height: 94rpx;
+  /* background-color: #F2CB55; */
+  background-color: #ff6600;
+  color: #fff;
+  border-radius: 16rpx;
+}
+
+.btnDisWrp {
+  background-color: #ddd;
+}
+
+.btnTxt {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.arrow-right,
+.arrow-left,
+.arrow-down {
+  position: relative;
+  color: #999
+}
+
+.arrow-right::after,
+.arrow-left::after,
+.arrow-down::after {
+  border: solid 4rpx #999;
+  content: " ";
+  top: 50%;
+  position: absolute;
+  width: 14rpx;
+  height: 14rpx;
+  -webkit-transform: translateY(-50%) rotate(45deg);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.arrow-right {
+  padding-right: 30rpx;
+}
+
+.arrow-right::after {
+  border-bottom-width: 0;
+  border-left-width: 0;
+  right: 0;
+}
+
+.arrow-left::after {
+  border-top-width: 0;
+  border-right-width: 0;
+  left: 20px;
+}
+
+.arrow-down::after {
+  border-top-width: 0;
+  border-left-width: 0;
+  width: 8px;
+  height: 8px;
+}
+
+.mainThemeBg {
+  background-color: rgba(255, 102, 0, 0.1);
+}
+
+.mainDdThemeBg {
+  background-color: #ff8432 !important;
+}
+
+.mainThemeFont {
+  color: black !important;
+}
+
+.mainThemeBorderColor {
+  border-color: #ff8432 !important;
+}
+
+/* 深蓝色边框 */
+.mainThemeBorderColor1 {
+  border-color: #ff8432 !important;
+}
+
+.mainThemeWhiteColor {
+  color: #ff6600 !important;
+  border: solid 1rpx #ff6600 !important;
+  font-weight: 500;
+}
+
+.mainThemeIntergalvantabs .van-tab--active {
+  border-color: #ff8432 !important;
+  color: #ff8432 !important;
+}
+
+/* 淡黄色背景 */
+.mainThemeOtherBg {
+  background-color: #ffffff;
+}
+
+.redIcon-Blue {
+  background-color: #ff8432;
+}
+
+.topBar {
+  width: 750rpx;
+  height: 1rpx;
+  background-color: #ebebeb;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
+.safe-padding {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-padding1 {
+  padding-bottom: 24rpx;
+  padding-bottom: calc(constant(safe-area-inset-bottom));
+  padding-bottom: calc(env(safe-area-inset-bottom));
+}
+
+.safe-margin {
+  margin-bottom: constant(safe-area-inset-bottom);
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+.mediumMain {
+  color: #363646;
+  font-weight: 400;
+}
+
+/* @font-face {
+  font-family: 'DIN Alternate';
+  src: url('https://didi.paysys.cn/yls1/fonts/DIN-Alternate-Bold.ttf');
+} */
+
+/* @font-face {
+  font-family: 'D-DIN';
+  src: url('https://didi.paysys.cn/fonts/D-DIN.ttf');
+} */
+
+.fontJL {
+  font-family: 'BarlowSemiCondensed-Medium';
+}
+
+.oilPopMainTittleWhite {
+  background-color: #fff;
+}
+
+.oilPopMainTittle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100rpx;
+  margin-bottom: 24rpx;
+}
+
+.oilPopMainTittleName {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #363646;
+}
+
+.oilPopMainTittleBg {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 321rpx;
+  height: 183rpx;
+}
+
+.closeIconWrp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  position: absolute;
+  right: 36rpx;
+  top: 28rpx;
+}
+
+.closeIcon {
+  display: flex;
+  align-items: center;
+  color: #363646;
+  font-size: 36rpx;
+}
+
+.popWrp {
+  border-top-left-radius: 32rpx;
+  border-top-right-radius: 32rpx;
+}
+
+.cardWrp {
+  width: 702rpx;
+  border-radius: 16rpx;
+  background: #FFFFFF;
+  padding: 24rpx;
+  margin: 24rpx 0 0;
+  box-sizing: border-box;
+}
+
+.cardWrp2 {
+  padding: 24rpx 32rpx;
+}
+
+.footerWrp {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #ffffff;
+  width: 750rpx;
+  height: 128rpx;
+  z-index: 2;
+}
+
+.footerWrp1 {
+  padding-bottom: 48rpx;
+}
+
+.footerMainWrp {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 16rpx;
+}
+
+.footerMainBtn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 335rpx;
+  height: 88rpx;
+  border-radius: 160rpx;
+  background: linear-gradient(99deg, #FFA745 10%, #FF6D21 94%), #FF6600;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-left: 16rpx;
+}
+
+.footerMainBtn1 {
+  border: 1rpx solid #FF6600;
+  background: #fff;
+  color: #FF6600;
+  transform: rotateZ(360deg);
+}
+
+.footerMainBtnPhone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  font-size: 32rpx !important;
+  padding: 0 !important;
+}
+
+.safe-area {
+  width: 750rpx;
+  height: constant(safe-area-inset-bottom);
+  height: env(safe-area-inset-bottom);
+  min-height: 20rpx;
+  background-color: #fff;
+}
+
+.btnNewWrp {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx 4rpx;
+}
+
+.btnNewItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 80rpx;
+  font-size: 32rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+  background-color: #FF6600;
+  border: 1rpx solid #FF6600;
+  box-sizing: border-box;
+  border-radius: 160rpx;
+  transform: rotateZ(360deg)
+}
+
+.btnNewItem .symbol {
+  font-weight: 700;
+  font-size: 24rpx;
+  /* margin-left: -2rpx; */
+}
+
+.btnNewItem .money {
+  font-weight: 700;
+  font-size: 40rpx;
+  margin-right: 4rpx;
+}
+
+.btnNewItem1 {
+  margin-right: 16rpx;
+  color: #363646;
+  background-color: #fff;
+  border: 1rpx solid #C2C2C7;
+}
+
+.keyboardPlace1 {
+  height: 500rpx;
+  width: 100%;
+}
+
+.popNoneBg {
+  background-color: transparent !important;
+}
+
+.oilPop {
+  border-top-left-radius: 32rpx;
+  border-top-right-radius: 32rpx;
+}
+
+.oilPopGray {
+  border-top-left-radius: 32rpx;
+  border-top-right-radius: 32rpx;
+  background: #F3F3F3 !important;
+}
+
+.closeImg1 {
+  width: 40rpx;
+  height: 40rpx;
+}
 </style>
 
 <script type="application/json">
-  {
-    "pages": [
-      "./pages/login/entry",
-      "./pages/index/entry"
-    ],
-    "packages": [
-      "./subPackages/subPackagesDoc/entry?root=subPackagesDoc"
-    ]
-  }
+{
+  "pages": [
+    "./pages/home/homePage/homePage"
+  ],
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "__usePrivacyCheck__": true
+}
 </script>
 
 <!--也可以通过以下形式用js输出json，便于书写注释和使用条件编译-->

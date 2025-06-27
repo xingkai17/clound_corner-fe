@@ -1,13 +1,13 @@
-const { defineConfig } = require('@vue/cli-service')
-const path = require('path')
-const webpack = require('webpack')
-const chalk = require('chalk')
+const { defineConfig } = require('@vue/cli-service');
+const path = require('path');
+const webpack = require('webpack');
+const chalk = require('chalk');
 
 // 加载构建时环境配置
-const buildEnv = require('./build/env.js')
+const buildEnv = require('./build/env.js');
 
 // 获取 package.json 信息
-const packageInfo = require('./package.json')
+const packageInfo = require('./package.json');
 
 module.exports = defineConfig({
   outputDir: `dist/${process.env.MPX_CURRENT_TARGET_MODE}`,
@@ -21,8 +21,10 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src')
-      }
+        '@': path.resolve(__dirname, 'src'),
+        '/': path.resolve(__dirname, 'src'),
+        '@vant': path.resolve(__dirname, 'src/miniprogram_npm/@vant'),
+      },
     },
     plugins: [
       new webpack.DefinePlugin({
@@ -59,16 +61,16 @@ module.exports = defineConfig({
       plugin: {
         srcMode: 'wx',
         hackResolveBuildDependencies: ({ files, resolveDependencies }) => {
-          const path = require('path')
-          const packageJSONPath = path.resolve('package.json')
-          if (files.has(packageJSONPath)) files.delete(packageJSONPath)
+          const path = require('path');
+          const packageJSONPath = path.resolve('package.json');
+          if (files.has(packageJSONPath)) files.delete(packageJSONPath);
           if (resolveDependencies.files.has(packageJSONPath)) {
-            resolveDependencies.files.delete(packageJSONPath)
+            resolveDependencies.files.delete(packageJSONPath);
           }
-        }
+        },
       },
       loader: {},
-      unocss: {}
-    }
-  }
-})
+      unocss: {},
+    },
+  },
+});

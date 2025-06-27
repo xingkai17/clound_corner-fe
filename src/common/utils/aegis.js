@@ -1,32 +1,33 @@
 import Aegis from 'aegis-mp-sdk';
 import { getStorage } from '@/common/utils/cache';
+import { Config } from './config';
+
 // 区分环境的配置
 const getAegisConfig = () => {
-  const isProd = process.env.NODE_TYPE !== 'te';
+  // 根据 appID 判断环境
+  const isProd = Config.appID === 'wxfeb7f65afd711324' ||
+                 Config.appID === 'wx26cf2ad07297bb6a' ||
+                 Config.appID === 'wx768505309a8cf5b9';
 
   return {
-    id: isProd ? 'r5kDdSlZQjdOzEzXkv' : 'YrKZdfb3Ke6aQj9wPz',
+    id: isProd ? 'EPkvyhr2OqK5P7oJbY' : 'QVl10TJm3RVjPp3nqa',
+    uin: isProd ? '146105' : '145061',
     reportApiSpeed: true,
     reportAssetSpeed: true,
-    // 移除 spa
+    spa: true,
     hostUrl: 'https://rumt-zh.com',
     version: process.env.VERSION || '1.0.0',
     ext1: isProd ? 'prod' : 'test',
-    // 修改 api 配置
     api: {
       reportRequest: true,
       apiDetail: true,
     },
-    // delay: 1000,
-    // repeat: 5,
     ignore: [
       /Script error/i,
       /WeixinJSBridge is not defined/i,
     ],
     pagePerformance: true,
     offlineLog: true,
-    // aid: 'your-app-id',
-    // uid: 'user-id',
   };
 };
 
@@ -54,17 +55,32 @@ export const reportCustomEvent = (name, ext1, ext2, ext3) => {
     ext3,
   });
 };
-export const infoAll = (name, ext1) => {
-  aegis.infoAll(name, ext1, `appId=${process.env.APPID}`, `token=${getStorage('token')}`, new Date());
+
+// 匹配原始 app.js 的 reportEvent 方法
+export const reportEvent = (name, txt, ext1) => {
+  aegis.reportEvent({
+    name: name,
+    ext1: ext1 ? ext1 : 'wxMini',
+    ext2: Config.appID,
+    ext3: `${txt},source=wxMini,didiSelUid=${getStorage('didiSelUid')},phone=${getStorage('cellNum')},appId=${Config.appID},token=${getStorage('token')}`,
+  });
+};
+
+export const infoAll = (tittle, txt) => {
+  aegis.infoAll(`${tittle}~~`, new Date(),
+    `~~${new Date()}~~${txt},source=wxMini,didiSelUid=${getStorage('didiSelUid')},phone=${getStorage('cellNum')},appId=${Config.appID},token=${getStorage('token')}`,
+  );
 };
 
 // 修改 reportTime 方法，移除第三个参数
 export const reportTiming = (name, duration) => {
   aegis.reportTime(name, duration);
 };
+
 export const reportTime = (name) => {
   aegis.time(name);
 };
+
 export const reportTimeEnd = (name) => {
   aegis.timeEnd(name);
 };

@@ -1,0 +1,10 @@
+{
+    "navigationBarTitleText": "首页",
+    "usingComponents": {
+        "van-skeleton": "@vant/weapp/skeleton/index",
+        "privacy": "/components/privacy/index",
+        "van-popup": "@vant/weapp/popup/index"
+    },
+    "navigationStyle":"custom",
+    "enablePullDownRefresh":false
+}

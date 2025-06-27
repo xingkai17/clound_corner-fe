@@ -1,0 +1,8 @@
+<!-- <wxs module="filter" src="/filter/filter.wxs" /> -->
+<!-- bindtouchstart="touchStart" bindtouchend="touchEnd" catchtouchmove="touchMove" -->
+<view class="container">
+  <text>首页测试</text>
+  <view class="content">
+    <text>页面生成成功！</text>
+  </view>
+</view>

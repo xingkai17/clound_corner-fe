@@ -1,0 +1,6 @@
+<!-- 组件模板 -->
+<view class="wrapper">
+  <slot name="before"></slot>
+  <slot name="after"></slot>
+  <slot></slot>
+</view>

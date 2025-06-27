@@ -4,7 +4,21 @@ import mpxEslintParser from 'mpx-eslint-parser';
 export default [
   {
     ignores: [
-      'src/subPackages/subPackagesDoc/demo/**/*'
+      'src/subPackages/subPackagesDoc/demo/**/*',
+      'src/pages/**/*',
+      'src/components/**/*',
+      'src/miniprogram_npm/**/*',
+      'src/utils/**/*',
+      'src/custom-tab-bar/**/*',
+      'src/mvp/**/*',
+      'src/miniConfigList/**/*',
+      'src/libs/**/*',
+      'src/common/components/Charts/@qiun/**/*',
+      '**/*.wxml',
+      '**/*.wxss',
+      '**/*.d.ts',
+      '**/*.json',
+      '**/*.map',
     ],
   },
   {

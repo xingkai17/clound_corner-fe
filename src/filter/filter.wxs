@@ -1,0 +1,104 @@
+// 使用var定义一个json开头 将所有的过滤器写在unit中
+var filter = {
+  // 定义一个函数作为过滤器 参数text为传来的原始值
+  encryptionPhone: function(text) {
+    if(text !== '' && text != undefined) {
+      // 操作之后再将值return回去
+      var str = text.substring(0,3)+'****'+text.substring(7,11)
+      console.log(str)
+      return str;
+    } else {
+      return text
+    }
+  },
+  encryptionkm: function(text) {
+    if(text !== '' && text != undefined) {
+        // 操作之后再将值return回去
+        // var str=text.par.toFixed(2)
+        // var str=parseFloat(text)
+       var temp = text.split('.')
+        // var str=parseFloat(text).toFixed(2)
+        var str=temp[0]+'.'+temp[1][0]
+        console.log('testestetestencryptionkm', str)
+        return str;
+    } else {
+      return text
+    }
+  },
+  timefilter: function(text) {
+    if(text !== '' && text != undefined) {
+        // 操作之后再将值return回去
+        // var str=text.par.toFixed(2)
+        var str=text.slice(0,10)
+        return str;
+    } else {
+      return text
+    }
+  },
+    //   去除空格
+    trimfilter:function(text){
+        if(text !== '' && text != undefined) {
+            var str=text.trim()
+            return str
+            console.log(str)
+        }
+    },
+discountfilter: function(text) {
+    if(text !== '' && text != undefined) {
+   
+        // 操作之后再将值return回去stationItem
+        // var str=text.par.toFixed(2)
+        var str=text.toString()[0]+(text.toString()[1]?'.'+text.toString()[1]:'')
+        console.log('打折！！',str)
+        return str;
+    } else {
+      return text
+    }
+  },
+  //过滤税号四个为一组
+  dutyfilter: function(text) {
+    if(text !== '' && text != undefined) {
+        // 操作之后再将值return回去
+        // var str=text.par.toFixed(2)
+        var list=[]
+        list.push(text.slice(0,4))
+        list.push(text.slice(4,8))
+        list.push(text.slice(8,12))
+        list.push(text.slice(12,16))
+        list.push(text.slice(16))
+        return list;
+    } else {
+      return text
+    }
+  },
+    //过滤金额
+    amountfilter: function(text,type) {
+        if(text !== '' && text != undefined) {
+
+            if(type!=2){
+                var str=text.split('.')[0]+'.'+text.split('.')[1][0]
+               
+            }
+            if(type==2){
+
+            }
+            return str;
+        } else {
+          return text
+        }
+      },
+
+
+}
+
+// 导出过滤器 这段代码必写
+module.exports = {
+  // 格式为 导出的名字: json名字.函数名字 
+  encryptionPhone: filter.encryptionPhone,
+  encryptionkm:filter.encryptionkm,
+  timefilter:filter.timefilter,
+  dutyfilter:filter.dutyfilter,
+  discountfilter:filter.discountfilter,
+  amountfilter:filter.amountfilter,
+  trimfilter:filter.trimfilter
+}
