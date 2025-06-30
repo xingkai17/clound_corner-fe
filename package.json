@@ -19,8 +19,6 @@
     "test": "jest test/components"
   },
   "dependencies": {
-    "@didi/func": "1.0.1",
-    "@didi/regexp": "1.0.0",
     "@didi/tracker-mpapp": "1.4.27",
     "@mpxjs/api-proxy": "2.9.0",
     "@mpxjs/core": "2.9.0",

@@ -1,9 +1,8 @@
 /*
 * 项目业务级功能方法汇总文件
-* 通用性公共方法记得迭代到 @didi/func 方法库
 */
-import { floorKeep, isNotEmpty } from '@didi/func';
 import mpx from '@mpxjs/core';
+import { floorKeep, isNotEmpty } from '@/common/request/tools';
 // import { BRAND_SIDE } from 'src/views/center/index/config';
 
 /**

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { getStorage, setStorage } from '@/common/utils/cache';
-import { isNotEmptyAny } from '@didi/func';
+import { isNotEmptyAny } from '@/common/request/tools';
 import mpx from '@mpxjs/core';
 
 export const useUserStore = defineStore('user', {

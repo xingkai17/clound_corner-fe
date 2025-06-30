@@ -1,7 +1,6 @@
 import axios from 'axios';
 import mpx from '@mpxjs/core';
-// import { getStorage } from '@lhb/cache';
-import { deepCopy, isDef } from '@didi/func';
+import { deepCopy, isDef } from './tools';
 import { useUserStore } from '@/store/user';
 import { showToast } from '../utils/toast';
 import { getStorage } from '@/common/utils/cache';
